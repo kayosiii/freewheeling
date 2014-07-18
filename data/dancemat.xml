@@ -4,7 +4,10 @@
 
     <declare var="VAR_loopid_dancemat" type="int" init="500"/>
     <declare var="VAR_dancematrange" type="range" init="0>15"/>
-    <declare var="VAR_dancemat_joystick" type="int" init="0"/>
+	<!-- assuming you have an EBM PS2 adaptor 
+	you will need to look at the output from freewheeling in a terminal
+	if you are using a different device-->
+    <joystick var="VAR_dancemat_joystick" id="HID 0b43:0003"/>
 
     <!-- Startup -->
     <binding input="start-interface" 
