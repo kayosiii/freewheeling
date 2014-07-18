@@ -1,1 +1,25 @@
+To get a good idea of what this program is about take a look at 
+http://freewheeling.sf.net
+
+currently I am adding a few features
+
+Quick run through of the changes
+
+1) adapt freewheeling to use cmake - this currently is preliminary
+i am not doing any dependency checking - if you are on a Debian based system try
+'sudo apt-get build-dep freewheeling' as this will install all the dependencies you need (except cmake)
+
+2) fixed freewheeling refusing to start because number of threads didn't match. 
+I have a solution that works but I am not convinced it is optimal.
+
+3) added support for multiple joystick devices.
+there is now a variant of the declare syntax that automatically fetches 
+the number of the joystick device based on it's SDL ID string.
+the syntax looks like this
+<joystick var="[varible name]" id="[SDL id string]" />
+this is equivelent to 
+<declare var="[variable name]" type="int" init="[joystick # currently assigned to the device]" />
+multiple devices with the same id is supported (you can use both sides of the ebm/ps2 for instance) 
+obviously if they are actually separate devices then you don't get any say over which order 
+they show up in 
 Please read data/.fweelin.rc or ~/.fweelin.rc.
