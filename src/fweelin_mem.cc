@@ -121,8 +121,7 @@ void MemoryManager::ProcessQueue() {
 
   MemoryManagerUpdate mmu = 0;
   do {
-    printf("MEM: ...Processing queue...\n");
-	
+    // printf("MEM: ...Processing queue...\n");
     mmu = update_queue->ReadElement();
     if (mmu.IsValid()) {
       // printf("MEM: Valid item: updatetype: %d typeptr: %p restockidx: %d freeptr: %p\n",mmu.update_type,mmu.which_pt,mmu.updatedat.update_idx,mmu.updatedat.tofree);
