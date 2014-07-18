@@ -44,6 +44,8 @@
 #include "fweelin_paramset.h"
 #include "fweelin_logo.h"
 
+#include <SDL/SDL_gfxPrimitives.h>
+
 double mygettime(void) {
   static struct timeval mytv;
   gettimeofday(&mytv,NULL);
@@ -1056,7 +1058,7 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
                0,0,0, 255); // Outline
     // Show portion played in semitranslucent
     int pieradius = MIN((int) (lvol*looppiemag*curpeak),70);
-    FILLED_PIE(screen,dispx+halfx,dispy+halfy,
+    filledPieRGBA(screen,dispx+halfx,dispy+halfy,
                pieradius,0,
                (int) (360*loopmgr->GetPos(i)),
                (int) (loopcolors[3].r*colormag),
@@ -1720,11 +1722,11 @@ void VideoIO::video_event_loop ()
           lc_theta_break /= 1.5;
           
         for (int j = 0; j < a->GetLongCount_Cur(); j++, thetacur += thetalen)
-          FILLED_PIE(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale * LC_MAG),round(thetacur),
+          filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale * LC_MAG),round(thetacur),
                      round(thetacur+thetalen-lc_theta_break),
                      255,188,0,180);
-        FILLED_PIE(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,359,0,0,0,255);
-        FILLED_PIE(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,
+        filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,359,0,0,0,255);
+        filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,
                    (int) (360*a->GetPct()),127,127,127,255);
         sprintf(tmp,"%d",i+1);
         draw_text(screen,mainfont,tmp,pulsex-pulsepiemag,curpulsey-

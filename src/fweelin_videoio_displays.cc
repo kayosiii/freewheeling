@@ -90,7 +90,7 @@ void LoopTray::Draw(SDL_Surface *screen) {
   hlineRGBA(screen,xpos,xpos+iconsize,ypos+iconsize,40,40,40,255);
   vlineRGBA(screen,xpos,ypos,ypos+iconsize,40,40,40,255);
   vlineRGBA(screen,xpos+iconsize,ypos,ypos+iconsize,40,40,40,255);
-  FILLED_PIE(screen,xpos+iconsize/2,ypos+iconsize/2,
+  filledPieRGBA(screen,xpos+iconsize/2,ypos+iconsize/2,
              iconsize*3/8,
              30,359,
              0xF9,0xE6,0x13,255);
