@@ -265,6 +265,7 @@ class InputMatrix : public EventProducer, public EventListener {
   // and these references will be extracted
   ParsedExpression *ParseExpression(char *str, Event *ref, 
                                     char enable_keynames = 0);
+    void addJoystick(xmlNode* cur_node);
 
  private:
 

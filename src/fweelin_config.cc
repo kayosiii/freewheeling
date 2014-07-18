@@ -627,6 +627,35 @@ void InputMatrix::SetVariable (UserVariable *var, char *value) {
   }
 };
 
+void InputMatrix::addJoystick (xmlNode *joystick) {
+	UserVariable *nw = new UserVariable();
+	
+	//Name
+	xmlChar *name = xmlGetProp(joystick, (const xmlChar *)"var");
+	if (name == 0) {
+	  printf(FWEELIN_ERROR_COLOR_ON
+           "*** INIT: WARNING: Variable name not specified when declaring.\n"
+           FWEELIN_ERROR_COLOR_OFF);
+	  delete nw;
+	  return;
+	}
+	nw->name = new char[xmlStrlen(name)+1];
+	strcpy(nw->name,(char *)name);
+	xmlFree(name);
+	
+	//ID
+	nw->type = T_int;
+	xmlChar * xid = xmlGetProp(joystick, (const xmlChar *)"id");
+	char *id = new char[xmlStrlen(xid)+1];
+	strcpy(id,(char *)xid);
+	xmlFree(xid);
+	*nw = (int) SDLIO::GetSDLJoystickNum(id);
+	nw->next = vars;
+	vars = nw;
+// 	printf(" declare: variable '%s' type 'int' value '%s'\n", nw->name,value);
+	if (id != 0)free(id);
+}
+
 void InputMatrix::CreateVariable (xmlNode *declare) {
   UserVariable *nw = new UserVariable();
 
@@ -1786,7 +1815,10 @@ void FloConfig::ConfigureEventBindings(xmlDocPtr doc, xmlNode *events,
         !xmlStrcmp(cur_node->name, (const xmlChar *)"declare")) {
       // Variable declaration
       im.CreateVariable(cur_node);
-    } else if (!firstpass && 
+    } else if (firstpass && 
+				!xmlStrcmp(cur_node->name, (const xmlChar *)"joystick")) {
+	  im.addJoystick(cur_node);
+	} else if (!firstpass && 
                !xmlStrcmp(cur_node->name, (const xmlChar *)"binding")) {
       // Binding
       im.CreateBinding(interfaceid,cur_node);

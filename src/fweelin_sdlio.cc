@@ -376,7 +376,30 @@ static const char *SDL_names[] = {
   "power", 
   "euro", 
   "undo"};
+  
+char *used = NULL;
 
+int SDLIO::GetSDLJoystickNum(char * id) {
+	// sometimes there will be two devices with the same id
+	// we need to record the devices we have already assigned
+	// and skip them to get to subsequent joysticks with the same id
+	if (used == NULL) { 
+	  used = new char[SDL_NumJoysticks()]; 
+	  for (int i=0; i < SDL_NumJoysticks(); i++) {used[i] = 0;}
+	}
+	for (int i=0; i < SDL_NumJoysticks(); i++) {
+		if (used[i]) { continue; } 
+// 		printf("checking %s vs %s\n",SDL_JoystickName(i),id);
+		if (!strcmp(SDL_JoystickName(i),id)) {
+		  used[i] = 1;
+		  printf("joystick: assigned %s to joystick %i\n",id,i);
+		  return i;
+		}
+	}
+	printf("joystick: failed to find joystick matching id '%s'\n",id);
+	return -1;
+}
+  
 SDLKey SDLIO::GetSDLKey(char *keyname) {
   SDLKey ky;
   for (ky = SDLK_FIRST; ky < SDLK_LAST; ky = (SDLKey)(ky+1)) {
