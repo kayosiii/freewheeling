@@ -697,6 +697,7 @@ public:
           printf("CORE: No space in RingBuffer for element\n");
           return -1;
         } else
+		  
           return 0;
       }
       
@@ -705,6 +706,8 @@ public:
   };
   
   const T ReadElement () {
+	pthread_mutex_lock(&RT_RWThreads::register_rtstruct_lock);
+	pthread_mutex_unlock(&RT_RWThreads::register_rtstruct_lock);
     if (num_writers != RT_RWThreads::num_rw_threads) {
       printf("CORE: ERROR: SRMWRingBuffer thread count mismatch.\n");
       exit(1);
