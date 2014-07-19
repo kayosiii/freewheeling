@@ -1,0 +1,90 @@
+<interface>
+  <bindings>
+    <!-- overlap with dancemat and keyboard -->
+    <declare var="VAR_loopid_chessbeast" type="int" init="500" />
+    <declare var="VAR_chessbeastrange" type="range" init="0>7" />
+    <joystick var="VAR_chessbeast_joystick" id="HID 1267:a001" />
+    
+    <binding input="start-interface" 
+     output1="video-show-loop" 
+     parameters1="layoutid=0 and
+                  loopid=VAR_chessbeastrange+VAR_loopid_chessbeast"/>
+    
+    <!-- Chess beast controls -->
+    
+    <!-- START button: Start pulse -->
+    <binding input="joybutton" conditions="joystick=VAR_chessbeast_joystick and
+                                           button=9 and down=1"
+     output="select-pulse" parameters="pulse=0"/>
+    
+    <!-- SELECT button: Undo -->
+    <binding input="joybutton" 
+     conditions="SYSTEM_loopid_lastrecord_0=VAR_loopid_footswitch and 
+                 joystick=VAR_chessbeast_joystick and button=8 and down=1"
+     output1="erase-loop" parameters1="loopid=SYSTEM_loopid_lastrecord_0"
+     output2="set-variable" parameters2="var=VAR_xferloop and value=0"/>
+    <binding input="joybutton" conditions="joystick=VAR_chessbeast_joystick and
+                                           button=8 and down=1" 
+     output="erase-loop" parameters="loopid=SYSTEM_loopid_lastrecord_0"/>
+    
+    <!-- Erase Loops -->
+    <binding input="joybutton"
+     conditions="VAR_keyheld_space=1 and joystick=VAR_dancemat_joystick and
+                 button=VAR_chessbeastrange and down=1"
+     output1="erase-loop" parameters1="loopid=VAR_loopid_dancemat+button" 
+     output2="set-variable" parameters2="var=VAR_xferloop and value=0"/>
+  
+    <!-- Overdub Loops -->
+    <binding input="joybutton"
+     conditions="VAR_overdubmode=1 and joystick=VAR_chessbeast_joystick and
+                 button=VAR_chessbeastrange and down=1"
+     output="trigger-loop"
+     parameters="overdub=1 and overdubfeedback=VAR_overdubfeedback and
+                 loopid=VAR_loopid_chessbeast+button and vol=1.0*down"/>
+    
+    <!-- Trigger Loops -->
+    <binding input="joybutton"
+     conditions="VAR_shotmode=1 and joystick=VAR_chessbeast_joystick and
+                 button=VAR_chessbeastrange"
+     output="trigger-loop"
+     parameters="loopid=VAR_loopid_chessbeast+button and vol=1.0*down and
+                 engage=down and shot=1"/>
+
+    <binding input="joybutton"
+     conditions="joystick=VAR_chessbeast_joystick and button=VAR_chessbeastrange
+                 and down=1"
+     output="trigger-loop"
+     parameters="loopid=VAR_loopid_chessbeast+button and vol=1.0*down"/>
+  </bindings>
+  <graphics>
+    <layout id="0" name="CHESSBEAST" scale="2.0,2.0" pos="0.02,0.02" label="1" elabel="1" namepos="0.2,0.275" show="0">
+      
+      <element id="0" name="0" base="0.0,0.0" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="1" name="1" base="0.1,0.0" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="2" name="2" base="0.2,0.0" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="3" name="3" base="0.3,0.0" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      
+      <element id="7" name="7" base="0.0,0.1" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="6" name="6" base="0.1,0.1" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="5" name="5" base="0.2,0.1" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      <element id="4" name="4" base="0.3,0.1" looppos="0.05,0.05" loopsize="0.1" namepos="0.01,0.0">
+	<box outline="TBLR" pos="0.0,0.0,0.1,0.1"/>
+      </element>
+      
+    </layout>
+  </graphics>
+</interface>

@@ -1,0 +1,188 @@
+<interface>
+  <bindings>
+    <declare var="VAR_nv61slmkii_channel" type="int" init="0"/>
+    <declare var="VAR_nv61slmkii_drum_channel" type="int" init="9"/>
+    <!-- match dancemat -->
+    <declare var="VAR_loopid_nv61slmkii" type="int" init="500"/>
+    <declare var="VAR_nv61slmkii_ate_midicc" type="int" init="0"/>
+    <declare var="VAR_nv61slmkii_any_midicc" type="range" init="0>127"/>
+    
+    <!-- Multi-pages of loops -->
+    <declare var="VAR_nv61slmkii_looppage" type="int" init="0"/>
+    <declare var="VAR_nv61slmkii_loopidrangechange" type="int" init="8"/>
+    
+   <!-- First MIDI control for faders -->
+    <declare var="VAR_nv61slmkiifadercc_loop" type="int" init="41"/>
+    <declare var="VAR_nv61slmkiifadercc_io" type="int" init="31" />
+    
+    <!-- use the drumpads to trigger loops -->
+    <declare var="VAR_nv61slmkii_note" type="int" init="31"/>
+    <declare var="VAR_nv61slmkii_noterange" type="range" init="31>38"/>
+    <declare var="VAR_nv61slmkiicapture" type="int" init="0"/>
+    <declare var="VAR_nv61slmkiicapture_set" type="char" init="0"/>
+
+    <!-- pulse button controls -->
+    <declare var="VAR_nv61slmkii_pulseselect_midicontrol" type="int" init="95"/>
+    <declare var="VAR_nv61slmkii_dubmode_midicontrol" type="int" init="96"/>
+    
+    <!-- 16 loops and only 8 faders/knobs, so we create 2 pages of
+         switchable controls -->
+    <declare var="VAR_controlpage" type="char" init="0"/>
+      
+    <declare var="VAR_nv61slmkiirange" type="range" init="0>7"/>
+    <declare var="VAR_nv61slmkiicontrolrange1" type="range" init="0>7"/>
+    <declare var="VAR_nv61slmkiicontrolrange2" type="range" init="8>15"/>  
+    <!-- Startup -->
+    <binding input="start-interface" 
+     output1="video-show-loop" 
+     parameters1="layoutid=0 and
+                  loopid=VAR_nv61slmkii_noterange+VAR_loopid_nv61slmkii-VAR_nv61slmkii_note"/>
+    
+       <!-- Rest of the bindings... -->
+    <!--<binding input="midikey"
+      conditions="VAR_nv61slmkiicapture_set and keydown=1"
+      output1="set-variable" parameters1="var=VAR_nv61slmkiicapture and value=notenum"
+      output2="set-variable" parameters2="var=VAR_nv61slmkiicapture_set and value=0" />-->
+    
+    <!-- Set Trigger Volume (play volume) for Loops -->
+<!--    <binding input="midikey"
+     conditions="VAR_cutmode=1 and midichannel=VAR_nv61slmkii_drum_channel and 
+                 notenum=VAR_nv61slmkii_noterange and keydown=1"
+     output="set-trigger-volume" 
+     parameters="loopid=notenum+VAR_loopid_nv61slmkii and vol=velocity/127"/> 
+    <binding input="midikey"
+     conditions="VAR_cutmode=1 and midichannel=VAR_nv61slmkii_drum_channel and 
+                 notenum=VAR_nv61slmkii_noterange and keydown=0"
+     output="set-trigger-volume"
+     parameters="loopid=notenum+VAR_loopid_nv61slmkii and vol=0"/>-->
+    
+     <!-- Trigger Loops -->
+  <!--  <binding input="midikey"
+     conditions="notenum=VAR_nv61slmkiicapture and keydown=1"
+     output1="trigger-loop"
+     parameters1="loopid=VAR_loopid_footswitch and vol=velocity/127"
+     output2="set-variable" parameters2="var=VAR_xferloop and value=1"
+     output3="set-variable" parameters3="var=VAR_xferidx and
+                                         value=VAR_loopid_footswitch"/>-->
+
+    <binding input="midikey"
+     conditions="midichannel=VAR_nv61slmkii_drum_channel and notenum=VAR_nv61slmkii_noterange and 
+                 keydown=1"
+     output="trigger-loop"
+     parameters="loopid=notenum+VAR_loopid_nv61slmkii-VAR_nv61slmkii_note and vol=velocity/127"/>
+    
+     <!-- (Delete)/create/select pulse -->
+    <binding input="midicontroller" 
+     conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkii_pulseselect_midicontrol and
+                 controlval=VAR_switch_off"
+     output="delete-pulse" parameters="pulse=0"/>
+    <binding input="midicontroller" 
+     conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkii_pulseselect_midicontrol and
+                 controlval=VAR_switch_on"
+     output="select-pulse" parameters="pulse=0"/>
+    
+    <!-- toggle overdub mode -->
+    <binding input="midicontroller"
+      conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkii_dubmode_midicontrol"
+	     output="set-variable" parameters="var=VAR_overdubmode and value=controlval/127" />
+
+    <!-- Fader 1: Master in volume -->
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+0" 
+     output="set-master-in-volume" parameters="fadervol=controlval/127.0"/>
+    
+    <!-- Faders 2-5: Input volumes -->
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+1" 
+     output="set-in-volume" parameters="input=1 and fadervol=controlval/127.0"/>
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+2" 
+     output="set-in-volume" parameters="input=2 and fadervol=controlval/127.0"/>
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+3" 
+     output="set-in-volume" parameters="input=3 and fadervol=controlval/127.0"/>
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+4" 
+     output="set-in-volume" parameters="input=4 and fadervol=controlval/127.0"/>
+
+  
+    <!-- Fader 6: Master out volume -->
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiifadercc_io+5" 
+     output="set-master-out-volume" parameters="fadervol=controlval/127.0"/>
+    
+     <!-- Faders: Fade loops- trigger levels -->
+    <binding input="midicontroller" conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkiicontrolrange1+VAR_nv61slmkiifadercc_loop" 
+     output="set-trigger-volume" 
+     parameters="loopid=VAR_loopid_nv61slmkii+controlnum-VAR_nv61slmkiifadercc_loop and
+                 vol=controlval/127.0*2.0"/>
+    
+    <!-- Capture all other MIDI CCs on BCF channel to prevent them being spit out as MIDI out -->
+     <binding input="midicontroller"
+      conditions="midichannel=VAR_nv61slmkii_channel and controlnum=VAR_nv61slmkii_any_midicc"
+      output="set-variable"
+      parameters="var=VAR_nv61slmkii_ate_midicc and value=controlnum"/>   
+  </bindings>     
+  
+  <graphics>
+    <layout id="0" name="NV 61SL MKII (1to8)" scale="0.35,0.45" pos="0.00,0.10" label="1" elabel="0" namepos="0.0,0.16" show="0">
+      <element id="0" name="LOOP1" base="0.0,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="1" name="LOOP2" base="0.35,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/> 
+      </element>
+
+      <element id="2" name="LOOP3" base="0.7,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="3" name="LOOP4" base="1.05,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.35,0.50">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/> 
+      </element>
+
+      <element id="4" name="LOOP5" base="1.4,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.15,1.10">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="5" name="LOOP6" base="1.75,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.15,1.10">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="6" name="LOOP7" base="2.1,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.25,0.50">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="7" name="LOOP8" base="2.45,0.0" looppos="0.17,0.17" loopsize="0.2" namepos="0.15,1.10">
+        <box outline="TBLR" pos="0.00,0.00, 0.40,0.35"/>
+      </element>
+
+      <element id="8" name="LOOP9" base="0.0,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="9" name="LOOP10" base="0.35,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="10" name="LOOP11" base="0.7,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.0,0.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="11" name="LOOP12" base="1.05,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.35,0.50">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="12" name="LOOP13" base="1.4,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.50,1.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="13" name="LOOP14" base="1.75,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.15,1.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="14" name="LOOP15" base="2.1,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.25,1.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.35,0.35"/>
+      </element>
+
+      <element id="15" name="LOOP16" base="2.45,0.45" looppos="0.17,0.17" loopsize="0.2" namepos="0.15,1.35">
+        <box outline="TBLR" pos="0.00,0.00, 0.40,0.35"/>
+      </element> 
+    </layout>
+  </graphics>
+</interface>
