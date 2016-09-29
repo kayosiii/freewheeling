@@ -343,7 +343,8 @@ void PreallocatedType::GoPostdelete(Preallocated *tofree) {
     }
   } else {
     // Single instance, simply delete it - no internal data structures to modify
-    ::delete tofree;
+//     ::delete tofree;
+	  free(tofree);
   }
 };
 
