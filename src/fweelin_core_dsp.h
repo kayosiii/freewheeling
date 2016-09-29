@@ -330,7 +330,7 @@ public:
   Pulse(Fweelin *app, nframes_t len, nframes_t startpos);
   ~Pulse();
 
-  inline float round(float num) {
+  inline float round_(float num) {
     if (num-(long)num < 0.5)
       return floor(num);
     else

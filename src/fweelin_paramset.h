@@ -35,11 +35,11 @@ public:
       printf("(param name: %s) ",name);
 
       this->name = new char[strlen(name)+1];
-      strcpy(this->name,name);
+      strcpy((char*)this->name,name);
     }
   }
 
-  char *name;   // Name of parameter
+  char const *name;   // Name of parameter
   float value;  // Value of parameter
 };
 
@@ -66,11 +66,11 @@ public:
 
     if (name != 0) {
       this->name = new char[strlen(name)+1];
-      strcpy(this->name,name);
+      strcpy((char*)this->name,name);
     }
   }
 
-  char *name;       // Of bank
+  char const *name;       // Of bank
   int numparams,    // Number of parameters in bank
     firstparamidx;  // Index of first parameter currently shown
   float maxvalue;   // Maximum value of any parameter in this bank
@@ -81,8 +81,8 @@ public:
 
 class FloDisplayParamSet : public FloDisplay, public EventListener, public EventProducer {
 public:
-  FloDisplayParamSet (Fweelin *app, char *name, int iid, int numactiveparams, int numbanks, int sx, int sy) : FloDisplay(iid),
-    app(app), name(name), numactiveparams(numactiveparams), invalidparam(0.), sx(sx), sy(sy), numbanks(numbanks), curbank(0) {
+  FloDisplayParamSet (Fweelin *app, char const *name, int iid, int numactiveparams, int numbanks, int sx, int sy) : FloDisplay(iid),
+    app(app), numactiveparams(numactiveparams), invalidparam(0.), sx(sx), sy(sy), numbanks(numbanks), curbank(0) {
     this->name = new char[strlen(name)+1];
     strcpy(this->name,name);
 

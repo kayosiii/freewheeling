@@ -222,7 +222,7 @@ class Browser : public FloDisplay, public EventListener, public EventProducer,
   inline BrowserItemType GetType() { return btype; };
   virtual FloDisplayType GetFloDisplayType() { return FD_Browser; };
 
-  inline static char *GetTypeName(BrowserItemType b) {
+  inline static char const *GetTypeName(BrowserItemType b) {
     switch (b) {
     case B_Scene_Tray :
       return "Scene Tray";

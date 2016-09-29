@@ -77,7 +77,7 @@ const float FloConfig::AUDIO_MEMORY_LEN = 10.0;
 // Copies configuration file 'cfgname' from shared to ~/.fweelin
 // If copyall is set, copies *all* .XML files from shared to ~/.fweelin
 // Backups are made if needed
-void FloConfig::CopyConfigFile (char *cfgname, char copyall) {
+void FloConfig::CopyConfigFile (char const *cfgname, char copyall) {
   char buf[CFG_PATH_MAX];
   char *homedir = getenv("HOME");
 
@@ -134,7 +134,7 @@ void FloConfig::CopyConfigFile (char *cfgname, char copyall) {
   }
 };
 
-char *FloConfig::PrepareLoadConfigFile (char *cfgname, char basecfg) {
+char *FloConfig::PrepareLoadConfigFile (char const *cfgname, char basecfg) {
   static char buf[CFG_PATH_MAX];
   char *homedir = getenv("HOME");
 
@@ -537,7 +537,7 @@ SDLKeyList *InputMatrix::AddOneKey (SDLKeyList *first, char *str) {
 // of the keysyms (named keys are separated by ,)
 SDLKeyList *InputMatrix::ExtractKeys (char *str) {
   char buf[255]; // Copy buf
-  char *delim = ","; 
+  char const *delim = ",";
 
   // Go through list of keys specified:
   char *cur = strpbrk(str,delim);
@@ -1303,7 +1303,7 @@ void InputMatrix::ParseToken(char *str, CfgToken *dst, Event *ref,
   }
 
   // No matches to variables or parameters, interpret as static token
-  char *ascii_scalar = " 0123456789.>,";
+  char const *ascii_scalar = " 0123456789.>,";
   if (strlen(str) > 0 && strpbrk(str,ascii_scalar) != str) {
     // Wait a second, this isn't a scalar, it probably has letters!
     printf(FWEELIN_ERROR_COLOR_ON
@@ -2735,13 +2735,13 @@ FloDisplay *FloConfig::SetupParamSet(xmlDocPtr doc, xmlNode *paramset, int inter
   printf("(parameter set) ");
 
   // Param set name
-  char *name = "NONAME";
+  char const *name = "NONAME";
   char ps_named = 0;
   xmlChar *nn = xmlGetProp(paramset, (const xmlChar *)"name");
   if (nn != 0) {
     ps_named = 1;
     name = new char[xmlStrlen(nn)+1];
-    strcpy(name,(char *) nn);
+    strcpy((char*)name,(char *) nn);
     xmlFree(nn);
   }
 
@@ -3487,7 +3487,7 @@ void FloConfig::CheckForHelp(xmlNode *n) {
 
 // Creates an empty variable based on the given name. The config file
 // can then refer to the variable
-UserVariable *FloConfig::AddEmptyVariable(char *name) {
+UserVariable *FloConfig::AddEmptyVariable(char const *name) {
   UserVariable *nw = new UserVariable();
   if (name != 0) {
     nw->name = new char[strlen(name)+1];
@@ -3503,7 +3503,7 @@ UserVariable *FloConfig::AddEmptyVariable(char *name) {
 
 // Makes the given variable into a system variable by linking it to
 // the pointer
-void FloConfig::LinkSystemVariable(char *name, CoreDataType type, char *ptr) {
+void FloConfig::LinkSystemVariable(char const *name, CoreDataType type, char *ptr) {
   UserVariable *cur = im.vars;
   while (cur != 0) {
     if (cur->name != 0) {

@@ -52,7 +52,7 @@ double mygettime(void) {
   return(mytv.tv_sec+mytv.tv_usec/1000000.0);
 }
 
-int round(float num) {
+int round_(float num) {
   if (num-(long)num < 0.5)
     return (int) floor(num);
   else
@@ -109,7 +109,7 @@ CircularMap::CircularMap(SDL_Surface *in,
           printf(" in[%d,%d]\n",(int)in_x,(int)in_y);*/
 
         // Yup-- write the map
-        map[idx] = in_base + round(in_y)*pitch + round(in_x)*bpp;
+        map[idx] = in_base + round_(in_y)*pitch + round_(in_x)*bpp;
         
         // Generate scan map
         if (pixelscount <= 0) {
@@ -826,7 +826,7 @@ void VideoIO::Squeeze_BlitSurface(SDL_Surface *in, SDL_Surface *out,
 // Justify is 0 for default justify, 1 for center, and 2 for opposite side
 // Returns size of text drawn in sx and sy (optionally)
 int VideoIO::draw_text(SDL_Surface *out, TTF_Font *font,
-                       char *str, int x, int y, SDL_Color clr, 
+                       char const *str, int x, int y, SDL_Color clr,
                        char justifyx, char justifyy, int *sx, int *sy) {
   SDL_Surface *text;
   SDL_Rect dstrect;
@@ -1510,7 +1510,7 @@ void VideoIO::video_event_loop ()
   const static int CHECK_SIZE_FRAMES = 20;
   int checksizecnt = CHECK_SIZE_FRAMES;
   int num_streams = 0;          // Number of output streams
-  char *stream_type = "";       // Type (extension) of output stream
+  char const *stream_type = "";       // Type (extension) of output stream
   double streamoutsize = 0.0;   // Last checked size of all output streams.
 
   video_time = 0;

@@ -49,7 +49,7 @@
 #define FWEELIN_TITLE_IMAGE FWEELIN_DATADIR "/fweelin.bmp"
 
 extern double mygettime(void);
-extern int round(float num);
+ extern int round_(float num);
 
 class Fweelin;
 class LoopManager;
@@ -120,7 +120,7 @@ public:
 
   // Draw text, and optionally return size of text drawn in sx and sy
   static int draw_text(SDL_Surface *out, TTF_Font *font,
-                       char *str, int x, int y, SDL_Color clr, char centerx = 0,
+                       char const *str, int x, int y, SDL_Color clr, char centerx = 0,
                        char centery = 0, int *sx = 0, int *sy = 0);
 
   // If no suitable map exists in list 'cmaps', creates a planar>circular map

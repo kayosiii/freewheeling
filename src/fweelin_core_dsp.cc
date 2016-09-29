@@ -420,7 +420,7 @@ nframes_t Pulse::QuantizeLength(nframes_t src) {
   float frac = (float) src/len; 
   if (frac < 0.5)
     frac = 1.0; // Don't allow 0 length loops
-  return (nframes_t) (round(frac) * len);
+  return (nframes_t) (round_(frac) * len);
 }
 
 void Pulse::SetMIDIClock (char start) {

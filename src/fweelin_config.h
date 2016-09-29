@@ -753,12 +753,12 @@ class FloConfig {
 
   // Copy config file from shared folder
   // Optionally copy all config files
-  void CopyConfigFile (char *cfgname, char copyall);
+  void CopyConfigFile (char const *cfgname, char copyall);
 
   // Prepare to load configuration file 'cfgname' 
   // Finds the file in one of several places, and copies it to
   // the config folder. Returns the path name if found, or null if not found
-  char *PrepareLoadConfigFile (char *cfgname, char basecfg);
+  char *PrepareLoadConfigFile (char const *cfgname, char basecfg);
   
   // Configure bindings between events and their triggers
   void ConfigureEventBindings(xmlDocPtr doc, xmlNode *events, 
@@ -788,14 +788,14 @@ class FloConfig {
 
   // Creates an empty variable based on the given name. The config file
   // can then refer to the variable
-  UserVariable *AddEmptyVariable(char *name);
+  UserVariable *AddEmptyVariable(char const *name);
 
   // Returns a pointer to the given variable
   UserVariable *GetVariable(char *name);
 
   // Makes the given variable into a system variable by linking it to
   // the pointer
-  void LinkSystemVariable(char *name, CoreDataType type, char *ptr);
+  void LinkSystemVariable(char const *name, CoreDataType type, char *ptr);
 
   // Input matrix- stores and handles all bindings between inputs and events
   inline InputMatrix *GetInputMatrix() { return &im; };
@@ -906,7 +906,7 @@ class FloConfig {
   inline codec GetStreamOutFormat() { return streamoutformat; }; 
   codec streamoutformat;
 
-  inline char *GetCodecName (codec i) {
+  inline char const * GetCodecName (codec i) {
     switch (i) {
       case VORBIS: return "ogg"; 
       case WAV: return "wav"; 
@@ -924,7 +924,7 @@ class FloConfig {
     return UNKNOWN;
   };
 
-  inline char *GetAudioFileExt (codec i) {
+  inline char const * GetAudioFileExt (codec i) {
     switch (i) { 
       case VORBIS: return ".ogg"; 
       case WAV: return ".wav"; 

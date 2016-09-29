@@ -272,7 +272,7 @@ public:
                      PreallocatedType *pre_extrachannel = 0);
   ~AudioBlockIterator();
 
-  inline float round(float num) {
+  inline float round_(float num) {
     if (num-(long)num < 0.5)
       return floor(num);
     else

@@ -45,6 +45,8 @@
 
 #include <glob.h>
 
+#include <openssl/md5.h>
+
 #include "fweelin_core.h"
 #include "fweelin_fluidsynth.h"
 #include "fweelin_paramset.h"
@@ -231,8 +233,8 @@ void Saveable::RenameSaveable(char **filename_ptr, int baselen,
 
 // This is for renaming an item in memory, so that the disk corresponds
 // with the new name
-void Saveable::RenameSaveable(char *librarypath, char *basename, 
-                              char *old_objname, char *nw_objname,
+void Saveable::RenameSaveable(char const *librarypath, char const *basename,
+                              char const *old_objname, char  *nw_objname,
                               const char **exts, int num_exts,
                               char **old_filename, char **new_filename) {
   if (savestatus == SAVE_DONE) {
@@ -442,7 +444,7 @@ void LoopManager::ItemRenamed(BrowserItem *i) {
                               curl->l->name, curl->name,
                               exts, 2,
                               &old_filename,
-                              &new_filename);
+							  &new_filename);
     
       // We also need to rename in the loop browser
       if (app->getBROWSER(B_Loop) != 0) 
@@ -469,8 +471,8 @@ void LoopManager::ItemRenamed(BrowserItem *i) {
       int numexts = END_OF_FORMATS + 1;
       char *exts[numexts];
       for (codec c = FIRST_FORMAT; c < END_OF_FORMATS; c = (codec) (c+1))
-        exts[c] = app->getCFG()->GetAudioFileExt(c);
-      exts[END_OF_FORMATS] = FWEELIN_OUTPUT_DATA_EXT;
+        exts[c] = (char *) app->getCFG()->GetAudioFileExt(c);
+      exts[END_OF_FORMATS] = (char*)FWEELIN_OUTPUT_DATA_EXT;
 
       // Rename all possible audio files + XML metadata to new name
       printf("DISK: Rename '%s'\n",((LoopBrowserItem *) i)->filename);
@@ -1435,7 +1437,7 @@ void LoopManager::ItemRenamed(char *nw) {
                                 rename_loop->name, nw,
                                 exts, 2,
                                 &old_filename,
-                                &new_filename);
+				 (char**)&new_filename);
     
     // We also need to rename in the loop browser
     if (app->getBROWSER(B_Loop) != 0) 
@@ -3407,8 +3409,8 @@ long int Fweelin::getSTREAMSIZE(FileStreamer *fs, char &frames) {
   }
 }
 
-float Fweelin::getSTREAMSTATS(char *&stream_type, int &num_streams) {
-  stream_type = cfg->GetAudioFileExt(cfg->GetStreamOutFormat());
+float Fweelin::getSTREAMSTATS(char const *&stream_type, int &num_streams) {
+  stream_type = (char *) cfg->GetAudioFileExt(cfg->GetStreamOutFormat());
   num_streams = 0;
   char frames;
   long int totalsize = 0;

@@ -28,7 +28,7 @@
 #ifdef __MACOSX__
 #include <openssl/md5.h>
 #else
-#include <gnutls/openssl.h>
+// #include <gnutls/openssl.h>
 #endif
 
 #include "fweelin_amixer.h"
@@ -164,8 +164,8 @@ class Saveable {
   //
   // *Old_filename and *new_filename are set to point to the old and new
   // filename-- you must delete[] the memory that is allocated for these
-  void RenameSaveable(char *librarypath, char *basename, 
-                      char *old_objname, char *nw_objname,
+  void RenameSaveable(const char *librarypath, const char *basename,
+                      const char *old_objname, char *nw_objname,
                       const char **exts, int num_exts,
                       char **old_filename, char **new_filename);
 
@@ -998,7 +998,7 @@ class Fweelin : public EventProducer, public BrowserCallback {
 
   // Returns stats about output streams-
   // The type (file extension .ogg, etc), The number of output streams open, the total number of megabytes written (Return value).
-  float getSTREAMSTATS(char *&stream_type, int &num_streams);
+  float getSTREAMSTATS(char const *&stream_type, int &num_streams);
 
   inline SceneBrowserItem *getCURSCENE() { return curscene; };
   inline void setCURSCENE(SceneBrowserItem *nw) { curscene = nw; };

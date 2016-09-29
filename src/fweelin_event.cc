@@ -157,185 +157,185 @@ void Event::SetupEventTypeTable(MemoryManager *mmgr) {
 
 #define MIDI_EVENT_PREALLOCATION 50 // How many MIDI events to preallocate.
 
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_Key,"key",KeyInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_JoystickButton,"joybutton",
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_Key,(char*)"key",KeyInputEvent,MIDI_EVENT_PREALLOCATION);
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_JoystickButton,(char*)"joybutton",
                 JoystickButtonInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIKey,"midikey",MIDIKeyInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIController,"midicontroller",
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIKey,(char*)"midikey",MIDIKeyInputEvent,MIDI_EVENT_PREALLOCATION);
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIController,(char*)"midicontroller",
                 MIDIControllerInputEvent,MIDI_EVENT_PREALLOCATION);
       SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIProgramChange,
-                "midiprogramchange",
+                (char*)"midiprogramchange",
                 MIDIProgramChangeInputEvent,MIDI_EVENT_PREALLOCATION);
       SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIChannelPressure,
-                "midichannelpressure",
+                (char*)"midichannelpressure",
                 MIDIChannelPressureInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIPitchBend,"midipitchbend",
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIPitchBend,(char*)"midipitchbend",
                 MIDIPitchBendInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIClock,"midiclock",MIDIClockInputEvent,MIDI_EVENT_PREALLOCATION);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIStartStop,"midistartstop",MIDIStartStopInputEvent,MIDI_EVENT_PREALLOCATION);
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIClock,(char*)"midiclock",MIDIClockInputEvent,MIDI_EVENT_PREALLOCATION);
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MIDIStartStop,(char*)"midistartstop",MIDIStartStopInputEvent,MIDI_EVENT_PREALLOCATION);
 
-      SET_ETYPE_SLOW(T_EV_ALSAMixerControlSet,"alsa-mixer-control-set",ALSAMixerControlSetEvent);
+      SET_ETYPE_SLOW(T_EV_ALSAMixerControlSet,(char*)"alsa-mixer-control-set",ALSAMixerControlSetEvent);
 
-      SET_ETYPE(T_EV_LoopClicked,"loop-clicked",LoopClickedEvent);
+      SET_ETYPE(T_EV_LoopClicked,(char*)"loop-clicked",LoopClickedEvent);
 
-      SET_ETYPE(T_EV_GoSub,"go-sub",GoSubEvent);
-      SET_ETYPE(T_EV_StartSession,"start-freewheeling",StartSessionEvent);
-      SET_ETYPE(T_EV_StartInterface,"start-interface",StartInterfaceEvent);
-      SET_ETYPE_SLOW(T_EV_ExitSession,"exit-freewheeling",ExitSessionEvent);
+      SET_ETYPE(T_EV_GoSub,(char*)"go-sub",GoSubEvent);
+      SET_ETYPE(T_EV_StartSession,(char*)"start-freewheeling",StartSessionEvent);
+      SET_ETYPE(T_EV_StartInterface,(char*)"start-interface",StartInterfaceEvent);
+      SET_ETYPE_SLOW(T_EV_ExitSession,(char*)"exit-freewheeling",ExitSessionEvent);
 
-      SET_ETYPE(T_EV_SlideMasterInVolume,"slide-master-in-volume",
+      SET_ETYPE(T_EV_SlideMasterInVolume,(char*)"slide-master-in-volume",
                 SlideMasterInVolumeEvent);
-      SET_ETYPE(T_EV_SlideMasterOutVolume,"slide-master-out-volume",
+      SET_ETYPE(T_EV_SlideMasterOutVolume,(char*)"slide-master-out-volume",
                 SlideMasterOutVolumeEvent);
-      SET_ETYPE(T_EV_SlideInVolume,"slide-in-volume",
+      SET_ETYPE(T_EV_SlideInVolume,(char*)"slide-in-volume",
                 SlideInVolumeEvent);
-      SET_ETYPE(T_EV_SetMasterInVolume,"set-master-in-volume",
+      SET_ETYPE(T_EV_SetMasterInVolume,(char*)"set-master-in-volume",
                 SetMasterInVolumeEvent);
-      SET_ETYPE(T_EV_SetMasterOutVolume,"set-master-out-volume",
+      SET_ETYPE(T_EV_SetMasterOutVolume,(char*)"set-master-out-volume",
                 SetMasterOutVolumeEvent);
-      SET_ETYPE(T_EV_SetInVolume,"set-in-volume",
+      SET_ETYPE(T_EV_SetInVolume,(char*)"set-in-volume",
                 SetInVolumeEvent);
-      SET_ETYPE(T_EV_ToggleInputRecord,"toggle-input-record",
+      SET_ETYPE(T_EV_ToggleInputRecord,(char*)"toggle-input-record",
                 ToggleInputRecordEvent);
 
-      SET_ETYPE(T_EV_SetMidiEchoPort,"set-midi-echo-port",
+      SET_ETYPE(T_EV_SetMidiEchoPort,(char*)"set-midi-echo-port",
                 SetMidiEchoPortEvent);
-      SET_ETYPE(T_EV_SetMidiEchoChannel,"set-midi-echo-channel",
+      SET_ETYPE(T_EV_SetMidiEchoChannel,(char*)"set-midi-echo-channel",
                 SetMidiEchoChannelEvent);
-      SET_ETYPE(T_EV_AdjustMidiTranspose,"adjust-midi-transpose",
+      SET_ETYPE(T_EV_AdjustMidiTranspose,(char*)"adjust-midi-transpose",
                 AdjustMidiTransposeEvent);
-      SET_ETYPE(T_EV_FluidSynthEnable,"fluidsynth-enable",
+      SET_ETYPE(T_EV_FluidSynthEnable,(char*)"fluidsynth-enable",
                 FluidSynthEnableEvent);
-      SET_ETYPE(T_EV_SetMidiTuning,"set-midi-tuning",
+      SET_ETYPE(T_EV_SetMidiTuning,(char*)"set-midi-tuning",
                 SetMidiTuningEvent);
 
-      SET_ETYPE(T_EV_SetTriggerVolume,"set-trigger-volume",
+      SET_ETYPE(T_EV_SetTriggerVolume,(char*)"set-trigger-volume",
                 SetTriggerVolumeEvent);
-      SET_ETYPE(T_EV_SlideLoopAmp,"slide-loop-amplifier",SlideLoopAmpEvent);
-      SET_ETYPE(T_EV_SetLoopAmp,"set-loop-amplifier",SetLoopAmpEvent);
-      SET_ETYPE(T_EV_AdjustLoopAmp,"adjust-loop-amplifier",AdjustLoopAmpEvent);
-      SET_ETYPE(T_EV_TriggerLoop,"trigger-loop",TriggerLoopEvent);
-      SET_ETYPE_SLOW(T_EV_MoveLoop,"move-loop",MoveLoopEvent);
-      SET_ETYPE_SLOW(T_EV_RenameLoop,"rename-loop",RenameLoopEvent);
-      SET_ETYPE_SLOW(T_EV_EraseLoop,"erase-loop",EraseLoopEvent);
-      SET_ETYPE_SLOW(T_EV_EraseAllLoops,"erase-all-loops",EraseAllLoopsEvent);
-      SET_ETYPE_SLOW(T_EV_EraseSelectedLoops,"erase-selected-loops",
+      SET_ETYPE(T_EV_SlideLoopAmp,(char*)"slide-loop-amplifier",SlideLoopAmpEvent);
+      SET_ETYPE(T_EV_SetLoopAmp,(char*)"set-loop-amplifier",SetLoopAmpEvent);
+      SET_ETYPE(T_EV_AdjustLoopAmp,(char*)"adjust-loop-amplifier",AdjustLoopAmpEvent);
+      SET_ETYPE(T_EV_TriggerLoop,(char*)"trigger-loop",TriggerLoopEvent);
+      SET_ETYPE_SLOW(T_EV_MoveLoop,(char*)"move-loop",MoveLoopEvent);
+      SET_ETYPE_SLOW(T_EV_RenameLoop,(char*)"rename-loop",RenameLoopEvent);
+      SET_ETYPE_SLOW(T_EV_EraseLoop,(char*)"erase-loop",EraseLoopEvent);
+      SET_ETYPE_SLOW(T_EV_EraseAllLoops,(char*)"erase-all-loops",EraseAllLoopsEvent);
+      SET_ETYPE_SLOW(T_EV_EraseSelectedLoops,(char*)"erase-selected-loops",
                      EraseSelectedLoopsEvent);
-      SET_ETYPE(T_EV_SlideLoopAmpStopAll,"slide-loop-amplifier-stop-all",
+      SET_ETYPE(T_EV_SlideLoopAmpStopAll,(char*)"slide-loop-amplifier-stop-all",
                 SlideLoopAmpStopAllEvent);
 
-      SET_ETYPE_SLOW(T_EV_DeletePulse,"delete-pulse",DeletePulseEvent);
-      SET_ETYPE_SLOW(T_EV_SelectPulse,"select-pulse",SelectPulseEvent);
-      SET_ETYPE(T_EV_TapPulse,"tap-pulse",TapPulseEvent);
-      SET_ETYPE(T_EV_SwitchMetronome,"switch-metronome",SwitchMetronomeEvent);
-      SET_ETYPE(T_EV_SetSyncType,"set-sync-type",SetSyncTypeEvent);
-      SET_ETYPE(T_EV_SetSyncSpeed,"set-sync-speed",SetSyncSpeedEvent);
-      SET_ETYPE(T_EV_SetMidiSync,"set-midi-sync",SetMidiSyncEvent);
+      SET_ETYPE_SLOW(T_EV_DeletePulse,(char*)"delete-pulse",DeletePulseEvent);
+      SET_ETYPE_SLOW(T_EV_SelectPulse,(char*)"select-pulse",SelectPulseEvent);
+      SET_ETYPE(T_EV_TapPulse,(char*)"tap-pulse",TapPulseEvent);
+      SET_ETYPE(T_EV_SwitchMetronome,(char*)"switch-metronome",SwitchMetronomeEvent);
+      SET_ETYPE(T_EV_SetSyncType,(char*)"set-sync-type",SetSyncTypeEvent);
+      SET_ETYPE(T_EV_SetSyncSpeed,(char*)"set-sync-speed",SetSyncSpeedEvent);
+      SET_ETYPE(T_EV_SetMidiSync,(char*)"set-midi-sync",SetMidiSyncEvent);
       
-      SET_ETYPE(T_EV_SetVariable,"set-variable",SetVariableEvent);
-      SET_ETYPE(T_EV_ToggleVariable,"toggle-variable",ToggleVariableEvent);
-      SET_ETYPE(T_EV_SplitVariableMSBLSB, "split-variable-msb-lsb",SplitVariableMSBLSBEvent);
+      SET_ETYPE(T_EV_SetVariable,(char*)"set-variable",SetVariableEvent);
+      SET_ETYPE(T_EV_ToggleVariable,(char*)"toggle-variable",ToggleVariableEvent);
+      SET_ETYPE(T_EV_SplitVariableMSBLSB, (char*)"split-variable-msb-lsb",SplitVariableMSBLSBEvent);
 
-      SET_ETYPE(T_EV_ParamSetGetAbsoluteParamIdx,"paramset-get-absolute-param-index",
+      SET_ETYPE(T_EV_ParamSetGetAbsoluteParamIdx,(char*)"paramset-get-absolute-param-index",
           ParamSetGetAbsoluteParamIdxEvent);
-      SET_ETYPE(T_EV_ParamSetGetParam,"paramset-get-param",
+      SET_ETYPE(T_EV_ParamSetGetParam,(char*)"paramset-get-param",
           ParamSetGetParamEvent);
-      SET_ETYPE(T_EV_ParamSetSetParam,"paramset-set-param",
+      SET_ETYPE(T_EV_ParamSetSetParam,(char*)"paramset-set-param",
           ParamSetSetParamEvent);
 
-      SET_ETYPE(T_EV_LogFaderVolToLinear,"log-fader-to-linear",LogFaderVolToLinearEvent);
+      SET_ETYPE(T_EV_LogFaderVolToLinear,(char*)"log-fader-to-linear",LogFaderVolToLinearEvent);
 
-      SET_ETYPE(T_EV_VideoShowParamSetBank,"video-show-paramset-bank",
+      SET_ETYPE(T_EV_VideoShowParamSetBank,(char*)"video-show-paramset-bank",
           VideoShowParamSetBankEvent);
-      SET_ETYPE(T_EV_VideoShowParamSetPage,"video-show-paramset-page",
+      SET_ETYPE(T_EV_VideoShowParamSetPage,(char*)"video-show-paramset-page",
           VideoShowParamSetPageEvent);
-      SET_ETYPE_SLOW(T_EV_VideoShowSnapshotPage,"video-show-snapshot-page",
+      SET_ETYPE_SLOW(T_EV_VideoShowSnapshotPage,(char*)"video-show-snapshot-page",
                      VideoShowSnapshotPageEvent);
-      SET_ETYPE_SLOW(T_EV_VideoShowLoop,"video-show-loop",VideoShowLoopEvent);
-      SET_ETYPE_SLOW(T_EV_VideoShowLayout,"video-show-layout",
+      SET_ETYPE_SLOW(T_EV_VideoShowLoop,(char*)"video-show-loop",VideoShowLoopEvent);
+      SET_ETYPE_SLOW(T_EV_VideoShowLayout,(char*)"video-show-layout",
                      VideoShowLayoutEvent);
-      SET_ETYPE_SLOW(T_EV_VideoSwitchInterface,"video-switch-interface",
+      SET_ETYPE_SLOW(T_EV_VideoSwitchInterface,(char*)"video-switch-interface",
                      VideoSwitchInterfaceEvent);
-      SET_ETYPE_SLOW(T_EV_VideoShowDisplay,"video-show-display",
+      SET_ETYPE_SLOW(T_EV_VideoShowDisplay,(char*)"video-show-display",
                      VideoShowDisplayEvent);
-      SET_ETYPE_SLOW(T_EV_VideoShowHelp,"video-show-help",
+      SET_ETYPE_SLOW(T_EV_VideoShowHelp,(char*)"video-show-help",
                      VideoShowHelpEvent);
-      SET_ETYPE_SLOW(T_EV_VideoFullScreen,"video-full-screen",
+      SET_ETYPE_SLOW(T_EV_VideoFullScreen,(char*)"video-full-screen",
                      VideoFullScreenEvent);
-      SET_ETYPE_SLOW(T_EV_ShowDebugInfo,"show-debug-info",
+      SET_ETYPE_SLOW(T_EV_ShowDebugInfo,(char*)"show-debug-info",
                      ShowDebugInfoEvent);
 
-      SET_ETYPE_SLOW(T_EV_ToggleDiskOutput,"toggle-disk-output",
+      SET_ETYPE_SLOW(T_EV_ToggleDiskOutput,(char*)"toggle-disk-output",
                      ToggleDiskOutputEvent);
-      SET_ETYPE(T_EV_SetAutoLoopSaving,"set-auto-loop-saving",
+      SET_ETYPE(T_EV_SetAutoLoopSaving,(char*)"set-auto-loop-saving",
                 SetAutoLoopSavingEvent);
-      SET_ETYPE_SLOW(T_EV_SaveLoop,"save-loop",SaveLoopEvent);
-      SET_ETYPE_SLOW(T_EV_SaveNewScene,"save-new-scene",SaveNewSceneEvent);
-      SET_ETYPE_SLOW(T_EV_SaveCurrentScene,"save-current-scene",
+      SET_ETYPE_SLOW(T_EV_SaveLoop,(char*)"save-loop",SaveLoopEvent);
+      SET_ETYPE_SLOW(T_EV_SaveNewScene,(char*)"save-new-scene",SaveNewSceneEvent);
+      SET_ETYPE_SLOW(T_EV_SaveCurrentScene,(char*)"save-current-scene",
                      SaveCurrentSceneEvent);
-      SET_ETYPE(T_EV_SetLoadLoopId,"set-load-loop-id",SetLoadLoopIdEvent);
-      SET_ETYPE(T_EV_SetDefaultLoopPlacement,"set-default-loop-placement",
+      SET_ETYPE(T_EV_SetLoadLoopId,(char*)"set-load-loop-id",SetLoadLoopIdEvent);
+      SET_ETYPE(T_EV_SetDefaultLoopPlacement,(char*)"set-default-loop-placement",
                 SetDefaultLoopPlacementEvent);
 
-      SET_ETYPE_SLOW(T_EV_ToggleSelectLoop,"toggle-select-loop",
+      SET_ETYPE_SLOW(T_EV_ToggleSelectLoop,(char*)"toggle-select-loop",
                      ToggleSelectLoopEvent);
-      SET_ETYPE_SLOW(T_EV_SelectOnlyPlayingLoops,"select-only-playing-loops",
+      SET_ETYPE_SLOW(T_EV_SelectOnlyPlayingLoops,(char*)"select-only-playing-loops",
                      SelectOnlyPlayingLoopsEvent);
-      SET_ETYPE_SLOW(T_EV_SelectAllLoops,"select-all-loops",
+      SET_ETYPE_SLOW(T_EV_SelectAllLoops,(char*)"select-all-loops",
                      SelectAllLoopsEvent);
-      SET_ETYPE_SLOW(T_EV_TriggerSelectedLoops,"trigger-selected-loops",
+      SET_ETYPE_SLOW(T_EV_TriggerSelectedLoops,(char*)"trigger-selected-loops",
                      TriggerSelectedLoopsEvent);
       SET_ETYPE(T_EV_SetSelectedLoopsTriggerVolume,
-                "set-selected-loops-trigger-volume",
+                (char*)"set-selected-loops-trigger-volume",
                 SetSelectedLoopsTriggerVolumeEvent);
       SET_ETYPE(T_EV_AdjustSelectedLoopsAmp,
-                "adjust-selected-loops-amp",
+                (char*)"adjust-selected-loops-amp",
                 AdjustSelectedLoopsAmpEvent);
-      SET_ETYPE_SLOW(T_EV_InvertSelection,"invert-selection",
+      SET_ETYPE_SLOW(T_EV_InvertSelection,(char*)"invert-selection",
                      InvertSelectionEvent);
 
-      SET_ETYPE_SLOW(T_EV_CreateSnapshot,"create-snapshot",
+      SET_ETYPE_SLOW(T_EV_CreateSnapshot,(char*)"create-snapshot",
                      CreateSnapshotEvent);
-      SET_ETYPE_SLOW(T_EV_RenameSnapshot,"rename-snapshot",
+      SET_ETYPE_SLOW(T_EV_RenameSnapshot,(char*)"rename-snapshot",
                      RenameSnapshotEvent);
-      SET_ETYPE_SLOW(T_EV_TriggerSnapshot,"trigger-snapshot",
+      SET_ETYPE_SLOW(T_EV_TriggerSnapshot,(char*)"trigger-snapshot",
                      TriggerSnapshotEvent);
-      SET_ETYPE_SLOW(T_EV_SwapSnapshots,"swap-snapshots",
+      SET_ETYPE_SLOW(T_EV_SwapSnapshots,(char*)"swap-snapshots",
                      SwapSnapshotsEvent);
       
-      SET_ETYPE_SLOW(T_EV_BrowserMoveToItem,"browser-move-to-item",
+      SET_ETYPE_SLOW(T_EV_BrowserMoveToItem,(char*)"browser-move-to-item",
                      BrowserMoveToItemEvent);
       SET_ETYPE_SLOW(T_EV_BrowserMoveToItemAbsolute,
-                     "browser-move-to-item-absolute",
+                     (char*)"browser-move-to-item-absolute",
                      BrowserMoveToItemAbsoluteEvent);
-      SET_ETYPE_SLOW(T_EV_BrowserSelectItem,"browser-select-item",
+      SET_ETYPE_SLOW(T_EV_BrowserSelectItem,(char*)"browser-select-item",
                      BrowserSelectItemEvent);
-      SET_ETYPE_SLOW(T_EV_BrowserRenameItem,"browser-rename-item",
+      SET_ETYPE_SLOW(T_EV_BrowserRenameItem,(char*)"browser-rename-item",
                      BrowserRenameItemEvent);
-      SET_ETYPE(T_EV_BrowserItemBrowsed,"browser-item-browsed",
+      SET_ETYPE(T_EV_BrowserItemBrowsed,(char*)"browser-item-browsed",
                 BrowserItemBrowsedEvent);
-      SET_ETYPE_SLOW(T_EV_PatchBrowserMoveToBank,"patchbrowser-move-to-bank",
+      SET_ETYPE_SLOW(T_EV_PatchBrowserMoveToBank,(char*)"patchbrowser-move-to-bank",
                      PatchBrowserMoveToBankEvent);
       SET_ETYPE_SLOW(T_EV_PatchBrowserMoveToBankByIndex,
-                     "patchbrowser-move-to-bank-by-index",
+                     (char*)"patchbrowser-move-to-bank-by-index",
                      PatchBrowserMoveToBankByIndexEvent);
 
       SET_ETYPE_SLOW(T_EV_TransmitPlayingLoopsToDAW,
-                     "transmit-playing-loops-to-daw",
+                     (char*)"transmit-playing-loops-to-daw",
                      TransmitPlayingLoopsToDAWEvent);
 
       // Internal events-- don't try to bind to these
 
-      SET_ETYPE(T_EV_EndRecord,"__internal__endrecord",EndRecordEvent);
-      SET_ETYPE(T_EV_LoopList,"__internal__looplist",LoopListEvent);
-      SET_ETYPE(T_EV_SceneMarker,"__internal__scenemarker",SceneMarkerEvent);
-      SET_ETYPE(T_EV_PulseSync,"__internal__pulsesync",PulseSyncEvent);
-      SET_ETYPE_NUMPREALLOC(T_EV_TriggerSet,"__internal__triggerset",TriggerSetEvent,100);
-      SET_ETYPE_NUMPREALLOC(T_EV_AddProcessor,"__internal__addprocessor",AddProcessorEvent,100);
-      SET_ETYPE_NUMPREALLOC(T_EV_DelProcessor,"__internal__delprocessor",DelProcessorEvent,100);
-      SET_ETYPE_NUMPREALLOC(T_EV_CleanupProcessor,"__internal__cleanupprocessor",CleanupProcessorEvent,100);
-      SET_ETYPE(T_EV_Input_MouseButton,"__internal__mousebutton",MouseButtonInputEvent);
-      SET_ETYPE_NUMPREALLOC(T_EV_Input_MouseMotion,"__internal__mousemotion",MouseMotionInputEvent,100);
+      SET_ETYPE(T_EV_EndRecord,(char*)"__internal__endrecord",EndRecordEvent);
+      SET_ETYPE(T_EV_LoopList,(char*)"__internal__looplist",LoopListEvent);
+      SET_ETYPE(T_EV_SceneMarker,(char*)"__internal__scenemarker",SceneMarkerEvent);
+      SET_ETYPE(T_EV_PulseSync,(char*)"__internal__pulsesync",PulseSyncEvent);
+      SET_ETYPE_NUMPREALLOC(T_EV_TriggerSet,(char*)"__internal__triggerset",TriggerSetEvent,100);
+      SET_ETYPE_NUMPREALLOC(T_EV_AddProcessor,(char*)"__internal__addprocessor",AddProcessorEvent,100);
+      SET_ETYPE_NUMPREALLOC(T_EV_DelProcessor,(char*)"__internal__delprocessor",DelProcessorEvent,100);
+      SET_ETYPE_NUMPREALLOC(T_EV_CleanupProcessor,(char*)"__internal__cleanupprocessor",CleanupProcessorEvent,100);
+      SET_ETYPE(T_EV_Input_MouseButton,(char*)"__internal__mousebutton",MouseButtonInputEvent);
+      SET_ETYPE_NUMPREALLOC(T_EV_Input_MouseMotion,(char*)"__internal__mousemotion",MouseMotionInputEvent,100);
       
     default:
       break;

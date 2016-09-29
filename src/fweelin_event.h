@@ -244,12 +244,12 @@ class EventParameter {
   // Specify an event parameter with given name, offset into event,
   // size of data type, and max index (-1 by default if parameter
   // is not indexed)
-  EventParameter (char *name = 0, long ofs = 0, 
+  EventParameter (char const *name = 0, long ofs = 0,
                   CoreDataType dtype = T_char,
                   int max_index = -1) :
     name(name), ofs(ofs), dtype(dtype), max_index(max_index) {};
 
-  char *name; // Name of event parameter
+  const char *name; // Name of event parameter
   long ofs; // Offset into event class of data
   CoreDataType dtype; // Type of data
   int max_index; // Config stores a hashtable for input events for
