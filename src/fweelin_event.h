@@ -21,7 +21,7 @@
 #include <linux/limits.h>
 #include <pthread.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 extern "C"
 {
 #include <jack/ringbuffer.h>
@@ -233,7 +233,7 @@ enum EventType {
 // Gets the offset of given variable into the current class
 #define FWEELIN_GETOFS(a) ((long)&a - (long)this)
 
-class SDLKeyList;
+class SDL_ScancodeList;
 class PreallocatedType;
 class Event;
 
@@ -391,7 +391,7 @@ class KeyInputEvent : public Event {
     case 0:
       return EventParameter("keydown",FWEELIN_GETOFS(down),T_char);
     case 1:
-      return EventParameter("key",FWEELIN_GETOFS(keysym),T_int,SDLK_LAST);
+      return EventParameter("key",FWEELIN_GETOFS(keysym),T_int,SDL_NUM_SCANCODES);
     case 2:
       return EventParameter("unicode",FWEELIN_GETOFS(unicode),T_int);
     }

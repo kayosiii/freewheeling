@@ -50,8 +50,8 @@ ItemRenamer::ItemRenamer (Fweelin *app, RenameCallback *cb,
     renaming = 0;
   }
   else {
-    app->getSDLIO()->EnableUNICODE(1);
-    app->getSDLIO()->EnableKeyRepeat(1);    
+//     app->getSDLIO()->EnableUNICODE(1);
+//     app->getSDLIO()->EnableKeyRepeat(1);
     renaming = 1;
   }
 };
@@ -82,8 +82,8 @@ char ItemRenamer::HookEvent(Event *ev, EventProducer *from) {
                  kev->keysym == SDLK_KP_ENTER) {
         if (kev->down) {
           app->getCFG()->RemoveEventHook(this);
-          app->getSDLIO()->EnableUNICODE(0);
-          app->getSDLIO()->EnableKeyRepeat(0);
+//           app->getSDLIO()->EnableUNICODE(0);
+//           app->getSDLIO()->EnableKeyRepeat(0);
 
           // Notify callback that item has been renamed
           cb->ItemRenamed(rename_tmpbuf); // Callback may delete -this-
@@ -92,8 +92,8 @@ char ItemRenamer::HookEvent(Event *ev, EventProducer *from) {
       } else if (kev->keysym == SDLK_ESCAPE) {
         if (kev->down) {
           app->getCFG()->RemoveEventHook(this);
-          app->getSDLIO()->EnableUNICODE(0);
-          app->getSDLIO()->EnableKeyRepeat(0);
+//           app->getSDLIO()->EnableUNICODE(0);
+//           app->getSDLIO()->EnableKeyRepeat(0);
 
           // Stop
           cb->ItemRenamed(0); // Callback may delete -this-

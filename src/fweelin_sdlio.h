@@ -47,20 +47,20 @@ class KeySettings {
     spacekey;
 };
 
-class SDLKeyList {
+class SDL_ScancodeList {
  public:
-  SDLKeyList (SDLKey k) : k(k), next(0) {};
+  SDL_ScancodeList (SDL_Scancode k) : k(k), next(0) {};
 
-  SDLKey k;
-  SDLKeyList *next;
+  SDL_Scancode k;
+  SDL_ScancodeList *next;
 };
 
 // SDL Input Handler
 class SDLIO : public EventProducer, public EventListener {
 public:
   SDLIO (Fweelin *app) : app(app), sdlthreadgo(0) {
-    keyheld = new char[SDLK_LAST];
-    for (int i = 0; i < SDLK_LAST; i++)
+    keyheld = new char[SDL_NUM_SCANCODES];
+    for (int i = 0; i < SDL_NUM_SCANCODES; i++)
       keyheld[i] = 0;
   };
   virtual ~SDLIO() { 
@@ -80,18 +80,18 @@ public:
 
   // We use slightly modified keynames for the config system:
   // Gets the SDL keysym that corresponds to key with a given name
-  static SDLKey GetSDLKey(char *keyname);
+  static SDL_Scancode GetSDL_Scancode(char const *keyname);
   // And the name corresponding to the keysym..
-  static const char *GetSDLName(SDLKey sym);
+  static const char *GetSDLName(SDL_Scancode sym);
 
-  inline void EnableUNICODE(int enable) { SDL_EnableUNICODE(enable); };
-  inline void EnableKeyRepeat(int enable) { 
-    if (enable)
-      SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,
-                          SDL_DEFAULT_REPEAT_INTERVAL);
-    else 
-      SDL_EnableKeyRepeat(0,0);
-  };
+//   inline void EnableUNICODE(int enable) { SDL_EnableUNICODE(enable); };
+//   inline void EnableKeyRepeat(int enable) {
+//     if (enable)
+//       SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,
+//                           SDL_DEFAULT_REPEAT_INTERVAL);
+//     else
+//       SDL_EnableKeyRepeat(0,0);
+//   };
 
   // SDL event handler thread
   static void *run_sdl_thread (void *ptr);
@@ -108,7 +108,7 @@ protected:
   int numjoy;           // Number of joysticks
   SDL_Joystick **joys;  // Control structure for each joystick
 
-  // Keys currently held down- array for all SDLKeys, nonzero if held
+  // Keys currently held down- array for all SDL_Scancodes, nonzero if held
   char *keyheld;
 
   // Deprecated

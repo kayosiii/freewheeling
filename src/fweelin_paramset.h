@@ -132,7 +132,7 @@ public:
 
   virtual FloDisplayType GetFloDisplayType() { return FD_ParamSet; };
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
   
   virtual void ReceiveEvent(Event *ev, EventProducer *from);
 

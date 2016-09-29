@@ -509,22 +509,22 @@ char *InputMatrix::RemoveSpaces (char *str) {
 
 // Adds one key to the given list based on the keysym name
 // Returns the new first pointer
-SDLKeyList *InputMatrix::AddOneKey (SDLKeyList *first, char *str) {
+SDL_ScancodeList *InputMatrix::AddOneKey (SDL_ScancodeList *first, char *str) {
   // Remove leading and trailing spaces
   str = RemoveSpaces(str);
 
-  SDLKey kh_sym = SDLIO::GetSDLKey(str);
-  if (kh_sym != SDLK_UNKNOWN) {
+  SDL_Scancode kh_sym = SDLIO::GetSDL_Scancode(str);
+  if (kh_sym != SDL_SCANCODE_UNKNOWN) {
     printf("'%s' + ",str);
 
     // Link it in!
     if (first == 0)
-      first = new SDLKeyList(kh_sym);
+      first = new SDL_ScancodeList(kh_sym);
     else {
-      SDLKeyList *cur = first;
+      SDL_ScancodeList *cur = first;
       while (cur->next != 0)
         cur = cur->next;
-      cur->next = new SDLKeyList(kh_sym);
+      cur->next = new SDL_ScancodeList(kh_sym);
     }
   }
   else
@@ -535,7 +535,7 @@ SDLKeyList *InputMatrix::AddOneKey (SDLKeyList *first, char *str) {
 
 // Extracts named keys from the given string and returns a list
 // of the keysyms (named keys are separated by ,)
-SDLKeyList *InputMatrix::ExtractKeys (char *str) {
+SDL_ScancodeList *InputMatrix::ExtractKeys (char *str) {
   char buf[255]; // Copy buf
   char const *delim = ",";
 
@@ -559,7 +559,7 @@ SDLKeyList *InputMatrix::ExtractKeys (char *str) {
   }
 
   // Parse it
-  SDLKeyList *first = 0;
+  SDL_ScancodeList *first = 0;
   first = AddOneKey(first,buf);
 
   while (cur != 0) {
@@ -1267,9 +1267,9 @@ void InputMatrix::ParseToken(char *str, CfgToken *dst, Event *ref,
 
   // Parse key name?
   if (enable_keynames) {
-    int keysym = SDLIO::GetSDLKey((char *) str);
-    if (keysym != SDLK_UNKNOWN && keysym >= SDLK_FIRST &&
-        keysym < SDLK_LAST) {
+    int keysym = SDLIO::GetSDL_Scancode((char *) str);
+    if (keysym != SDL_SCANCODE_UNKNOWN && keysym >= SDL_SCANCODE_A &&
+        keysym < SDL_NUM_SCANCODES) {
       // Token references a keyboard key!
       dst->cvt = T_CFG_Static; // Interpret as static
       dst->val.type = T_int;

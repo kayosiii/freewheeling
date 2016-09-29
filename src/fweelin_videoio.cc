@@ -44,7 +44,7 @@
 #include "fweelin_paramset.h"
 #include "fweelin_logo.h"
 
-#include <SDL/SDL_gfxPrimitives.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 double mygettime(void) {
   static struct timeval mytv;
@@ -59,108 +59,110 @@ int round_(float num) {
     return (int) ceil(num);
 }
 
-CircularMap::CircularMap(SDL_Surface *in,
+CircularMap::CircularMap(SDL_Renderer *renderer,
                          int map_xs, int map_ys,
                          int in_xs, int in_ys,
                          int rinner, int rsize) :
-  in(in), map_xs(map_xs), map_ys(map_ys), in_xs(in_xs), in_ys(in_ys),
+  renderer(renderer), map_xs(map_xs), map_ys(map_ys), in_xs(in_xs), in_ys(in_ys),
   rinner(rinner), rsize(rsize), next(0) {
   // Allocate memory for maps
   map = new Uint8 *[map_xs * map_ys];
   // 4 scan run lengths per scanline
   scanmap = new int[4 * map_ys];
 
-  // Compute constants
-  int map_xc = map_xs/2;
-  int map_yc = map_ys/2;
-  int pitch = in->pitch;
-  int bpp = in->format->BytesPerPixel;
-  Uint8 *in_base = (Uint8 *) in->pixels;
+  // FIXME make this work
 
-  // Now generate, interating across output range
-  for (int y = 0; y < map_ys; y++) {
-    int runnum = 0,
-      // Count of consecutive written/notwritten pixels
-      // Positive is written, negative is notwritten
-      pixelscount = 0;
-    for (int x = 0; x < map_xs; x++) {
-      //printf("%d %d\n", x, y);
-      int yofs = y-map_yc,
-        xofs = map_xc-x;
-      float theta = atan2(yofs,xofs),
-        in_x = in_xs*(theta+M_PI)/(2*M_PI);
-
-      // Now that we know x mapping, based on calculated theta (see theta)
-      // Let's get y mapping
-      float in_y;
-      if (sin(theta) == 0) {
-        // This fixes an annoying horizontal crack in the map
-        in_y = (xofs-rinner)*in_ys/rsize;
-        //printf("xofs: %d yofs: %d inx: %f iny: %f\n",xofs,yofs,in_x,in_y);
-      }
-      else
-        in_y = (yofs/sin(theta)-rinner)*in_ys/rsize;
-
-      // Are we in range, honey?
-      int idx = y*map_xs + x;
-      if (in_x >= 0 & in_y >= 0 &&
-          in_x < in_xs && in_y < in_ys) {
-        /*printf("%d %d\n", x, y);
-          printf(" in[%d,%d]\n",(int)in_x,(int)in_y);*/
-
-        // Yup-- write the map
-        map[idx] = in_base + round_(in_y)*pitch + round_(in_x)*bpp;
-        
-        // Generate scan map
-        if (pixelscount <= 0) {
-          // OK start of run
-
-          // Write number of empty pixels from last run to here
-          scanmap[y*4 + runnum] = -pixelscount;
-          //printf("Y:%d r:%d cnt: %d\n",y,runnum,-pixelscount);
-
-          runnum++;
-          pixelscount = 0;
-        }
-        pixelscount++;
-      } else {
-        //printf(" none\n");
-
-        // Mapping is empty for this location
-        map[idx] = 0;
-
-        // Generate scan map
-        if (pixelscount > 0) {
-          // OK end of run
-
-          // Write number of pixels written from beginning of run to here
-          scanmap[y*4 + runnum] = pixelscount;
-          //printf("Y:%d r:%d cnt: %d\n",y,runnum,pixelscount);
-          
-          runnum++;
-          pixelscount = 0;
-        }
-        pixelscount--;
-      }
-    }
-
-    // Now write the rest of scan map
-    if (pixelscount > 0) {
-      // OK end of run
-
-      // Write number of pixels written from beginning of run to here
-      scanmap[y*4 + runnum] = pixelscount;
-      //printf("Y:%d r:%d cnt: %d\n",y,runnum,pixelscount);
-
-      runnum++;
-    }
-
-    //printf("EOL- r:%d\n",runnum);
-    //usleep(100000);
-
-    for (; runnum < 4; runnum++) 
-      scanmap[y*4 + runnum] = -1;
-  }
+//   // Compute constants
+//   int map_xc = map_xs/2;
+//   int map_yc = map_ys/2;
+//   int pitch = renderer->pitch;
+//   int bpp = renderer->format->BytesPerPixel;
+//   Uint8 *in_base = (Uint8 *) renderer->pixels;
+//
+//   // Now generate, interating across output range
+//   for (int y = 0; y < map_ys; y++) {
+//     int runnum = 0,
+//       // Count of consecutive written/notwritten pixels
+//       // Positive is written, negative is notwritten
+//       pixelscount = 0;
+//     for (int x = 0; x < map_xs; x++) {
+//       //printf("%d %d\n", x, y);
+//       int yofs = y-map_yc,
+//         xofs = map_xc-x;
+//       float theta = atan2(yofs,xofs),
+//         in_x = in_xs*(theta+M_PI)/(2*M_PI);
+//
+//       // Now that we know x mapping, based on calculated theta (see theta)
+//       // Let's get y mapping
+//       float in_y;
+//       if (sin(theta) == 0) {
+//         // This fixes an annoying horizontal crack in the map
+//         in_y = (xofs-rinner)*in_ys/rsize;
+//         //printf("xofs: %d yofs: %d inx: %f iny: %f\n",xofs,yofs,in_x,in_y);
+//       }
+//       else
+//         in_y = (yofs/sin(theta)-rinner)*in_ys/rsize;
+//
+//       // Are we in range, honey?
+//       int idx = y*map_xs + x;
+//       if (in_x >= 0 & in_y >= 0 &&
+//           in_x < in_xs && in_y < in_ys) {
+//         /*printf("%d %d\n", x, y);
+//           printf(" in[%d,%d]\n",(int)in_x,(int)in_y);*/
+//
+//         // Yup-- write the map
+//         map[idx] = in_base + round_(in_y)*pitch + round_(in_x)*bpp;
+//
+//         // Generate scan map
+//         if (pixelscount <= 0) {
+//           // OK start of run
+//
+//           // Write number of empty pixels from last run to here
+//           scanmap[y*4 + runnum] = -pixelscount;
+//           //printf("Y:%d r:%d cnt: %d\n",y,runnum,-pixelscount);
+//
+//           runnum++;
+//           pixelscount = 0;
+//         }
+//         pixelscount++;
+//       } else {
+//         //printf(" none\n");
+//
+//         // Mapping is empty for this location
+//         map[idx] = 0;
+//
+//         // Generate scan map
+//         if (pixelscount > 0) {
+//           // OK end of run
+//
+//           // Write number of pixels written from beginning of run to here
+//           scanmap[y*4 + runnum] = pixelscount;
+//           //printf("Y:%d r:%d cnt: %d\n",y,runnum,pixelscount);
+//
+//           runnum++;
+//           pixelscount = 0;
+//         }
+//         pixelscount--;
+//       }
+//     }
+//
+//     // Now write the rest of scan map
+//     if (pixelscount > 0) {
+//       // OK end of run
+//
+//       // Write number of pixels written from beginning of run to here
+//       scanmap[y*4 + runnum] = pixelscount;
+//       //printf("Y:%d r:%d cnt: %d\n",y,runnum,pixelscount);
+//
+//       runnum++;
+//     }
+//
+//     //printf("EOL- r:%d\n",runnum);
+//     //usleep(100000);
+//
+//     for (; runnum < 4; runnum++)
+//       scanmap[y*4 + runnum] = -1;
+//   }
 }
 
 CircularMap::~CircularMap() {
@@ -173,121 +175,122 @@ CircularMap::~CircularMap() {
 char CircularMap::Map(SDL_Surface *out, int dstx, int dsty) {
   int bpp;
   int *tmpscan = scanmap;
-  
-  // Get surface format 
-  bpp = out->format->BytesPerPixel;
-  if (bpp != in->format->BytesPerPixel) {
-    printf("VIDEO: ERROR: Temporary buffer & video screen not "
-           "matching depth (in: %d out: %d).\n", 
-           in->format->BytesPerPixel,bpp);
-    return 1;
-  }
 
-  // Check for clipping
-  if (dstx < 0 || dsty < 0 || dstx+map_xs >= out->w ||
-      dsty+map_ys >= out->h)
-    return 1; // Don't handle clip case-- just don't draw!
-
-  /*
-   * Lock the surface 
-   */
-  if (SDL_MUSTLOCK(out)) {
-    if (SDL_LockSurface(out) < 0) {
-      return 1;
-    }
-  }
-
-  int out_pitch = out->pitch;
-
-  Uint8 **ptr = map,
-    **ptr2,
-    *optr = (Uint8 *) out->pixels + dsty*out_pitch + dstx*bpp,
-    *optr2;
-
-  Uint8 *op, *ip;
-  int ofs,
-    scanleft; 
-  for (int y = 0; y < map_ys; y++, ptr += map_xs, optr += out_pitch,
-         tmpscan += scanleft) {
-    scanleft = 4;
-    ptr2 = ptr;
-    optr2 = optr;
-
-    // What's the first x location on this scanline we should look at?
-    while ((ofs = *tmpscan) != -1 && scanleft) {
-      tmpscan++;
-
-      // Starting position on this scanline
-      ptr2 += ofs;
-      optr2 += ofs*bpp;
-      
-      //printf("wy:%d sofs:%d ",y,ofs);
-
-      // And the number of bytes in the run on this scanline
-      ofs = *(tmpscan++);
-
-      //printf("len:%d\n",ofs);
-
-      // Depending on the number of bytes per pixel, handle this scanline
-      // differently-- optimized subroutines follow..
-      switch (bpp) {
-      case 1:
-        {
-          for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
-            // Copy 1 byte pixels
-            *optr2 = **ptr2;
-        }
-        break;
-      case 2:
-        {
-          for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
-            // Copy 2 byte pixels
-            *((Uint16 *) optr2) = *((Uint16 *) (*ptr2));
-        }
-        break;
-      case 3:
-        {
-          // 3 byte pixels
-          for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp) {
-            // Access the map to find offset into input
-            ip = *ptr2;
-            // And output pointer is right there
-            op = optr2;
-
-            if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-              ip += 2;
-              // Copy, reversing bit order for this pixel
-              for (int n = 0; n < bpp; n++)
-                *(op++) = *(ip--);
-            }
-            else {
-              // Copy, regular bit order for this pixel
-              for (int n = 0; n < bpp; n++)
-                *(op++) = *(ip++);
-            }
-          }
-        }
-        break;
-      case 4:
-        {
-          for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
-            // Copy 4 byte pixels
-            *((Uint32 *) optr2) = *((Uint32 *) (*ptr2));
-        }
-        break;
-      }
-      
-      // Ok, 1 scan run complete, so 2 endpoints less on scanline
-      scanleft -= 2;
-    }
-  }
-
-  /*
-   * Unlock surface 
-   */
-  if (SDL_MUSTLOCK(out)) {
-    SDL_UnlockSurface(out);
-  }
+// FIXME: make this work
+//   // Get surface format
+//   bpp = out->format->BytesPerPixel;
+//   if (bpp != in->format->BytesPerPixel) {
+//     printf("VIDEO: ERROR: Temporary buffer & video screen not "
+//            "matching depth (in: %d out: %d).\n",
+//            in->format->BytesPerPixel,bpp);
+//     return 1;
+//   }
+//
+//   // Check for clipping
+//   if (dstx < 0 || dsty < 0 || dstx+map_xs >= out->w ||
+//       dsty+map_ys >= out->h)
+//     return 1; // Don't handle clip case-- just don't draw!
+//
+//   /*
+//    * Lock the surface
+//    */
+//   if (SDL_MUSTLOCK(out)) {
+//     if (SDL_LockSurface(out) < 0) {
+//       return 1;
+//     }
+//   }
+//
+//   int out_pitch = out->pitch;
+//
+//   Uint8 **ptr = map,
+//     **ptr2,
+//     *optr = (Uint8 *) out->pixels + dsty*out_pitch + dstx*bpp,
+//     *optr2;
+//
+//   Uint8 *op, *ip;
+//   int ofs,
+//     scanleft;
+//   for (int y = 0; y < map_ys; y++, ptr += map_xs, optr += out_pitch,
+//          tmpscan += scanleft) {
+//     scanleft = 4;
+//     ptr2 = ptr;
+//     optr2 = optr;
+//
+//     // What's the first x location on this scanline we should look at?
+//     while ((ofs = *tmpscan) != -1 && scanleft) {
+//       tmpscan++;
+//
+//       // Starting position on this scanline
+//       ptr2 += ofs;
+//       optr2 += ofs*bpp;
+//
+//       //printf("wy:%d sofs:%d ",y,ofs);
+//
+//       // And the number of bytes in the run on this scanline
+//       ofs = *(tmpscan++);
+//
+//       //printf("len:%d\n",ofs);
+//
+//       // Depending on the number of bytes per pixel, handle this scanline
+//       // differently-- optimized subroutines follow..
+//       switch (bpp) {
+//       case 1:
+//         {
+//           for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
+//             // Copy 1 byte pixels
+//             *optr2 = **ptr2;
+//         }
+//         break;
+//       case 2:
+//         {
+//           for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
+//             // Copy 2 byte pixels
+//             *((Uint16 *) optr2) = *((Uint16 *) (*ptr2));
+//         }
+//         break;
+//       case 3:
+//         {
+//           // 3 byte pixels
+//           for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp) {
+//             // Access the map to find offset into input
+//             ip = *ptr2;
+//             // And output pointer is right there
+//             op = optr2;
+//
+//             if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+//               ip += 2;
+//               // Copy, reversing bit order for this pixel
+//               for (int n = 0; n < bpp; n++)
+//                 *(op++) = *(ip--);
+//             }
+//             else {
+//               // Copy, regular bit order for this pixel
+//               for (int n = 0; n < bpp; n++)
+//                 *(op++) = *(ip++);
+//             }
+//           }
+//         }
+//         break;
+//       case 4:
+//         {
+//           for (int i = 0; i < ofs; i++, ptr2++, optr2 += bpp)
+//             // Copy 4 byte pixels
+//             *((Uint32 *) optr2) = *((Uint32 *) (*ptr2));
+//         }
+//         break;
+//       }
+//
+//       // Ok, 1 scan run complete, so 2 endpoints less on scanline
+//       scanleft -= 2;
+//     }
+//   }
+//
+//   /*
+//    * Unlock surface
+//    */
+//   if (SDL_MUSTLOCK(out)) {
+//     SDL_UnlockSurface(out);
+//   }
 
   return 0;
 };
@@ -825,7 +828,7 @@ void VideoIO::Squeeze_BlitSurface(SDL_Surface *in, SDL_Surface *out,
 // Draws text on the given surface
 // Justify is 0 for default justify, 1 for center, and 2 for opposite side
 // Returns size of text drawn in sx and sy (optionally)
-int VideoIO::draw_text(SDL_Surface *out, TTF_Font *font,
+int VideoIO::draw_text(SDL_Renderer *renderer, TTF_Font *font,
                        char const *str, int x, int y, SDL_Color clr,
                        char justifyx, char justifyy, int *sx, int *sy) {
   SDL_Surface *text;
@@ -849,8 +852,9 @@ int VideoIO::draw_text(SDL_Surface *out, TTF_Font *font,
     if (justifyy)
       dstrect.y -= (justifyy == 1 ? dstrect.h/2 : dstrect.h);
 
-    SDL_SetColorKey(text, SDL_SRCCOLORKEY|SDL_RLEACCEL, 0);
-    SDL_BlitSurface(text, NULL, out, &dstrect);
+    SDL_SetColorKey(text, SDL_TRUE|SDL_RLEACCEL, 0);
+//     SDL_BlitSurface(text, NULL, out, &dstrect);
+// FIXME make text render
     SDL_FreeSurface(text);
   }
   else {
@@ -865,7 +869,7 @@ int VideoIO::draw_text(SDL_Surface *out, TTF_Font *font,
 }
 
 char VideoIO::DrawLoop(LoopManager *loopmgr, int i, 
-                       SDL_Surface *screen, SDL_Surface *lscopepic,
+                       SDL_Renderer *renderer, SDL_Surface *lscopepic,
                        SDL_Color *loopcolors, float colormag,
                        FloConfig *fs, FloLayoutElement *curel,
 
@@ -1008,20 +1012,21 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
         if (ispd >= 1.) {
           int pos1 = (int) pos,
             pos2 = (int) (pos+ispd);
+//FIXME make stis stuff draw
           
-          boxRGBA(lscopepic,
-                  (int) pos1,
-                  midpt-peakd,
-                  (int) pos2,
-                  midpt+peakd,
-                  (int) rv, (int) gv, (int) bv, 255);
+//           boxRGBA(lscopepic,
+//                   (int) pos1,
+//                   midpt-peakd,
+//                   (int) pos2,
+//                   midpt+peakd,
+//                   (int) rv, (int) gv, (int) bv, 255);
         }
-        else
-          vlineRGBA(lscopepic,
-                    (int) pos,
-                    midpt-peakd,
-                    midpt+peakd,
-                    (int) rv, (int) gv, (int) bv, 255);
+//         else
+//           vlineRGBA(lscopepic,
+//                     (int) pos,
+//                     midpt-peakd,
+//                     midpt+peakd,
+//                     (int) rv, (int) gv, (int) bv, 255);
       }
     }
   }
@@ -1053,12 +1058,13 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
   }
 
   // Show scope
-  if (!loopmap->Map(screen,dispx,dispy)) {
-    circleRGBA(screen,dispx+halfx,dispy+halfy,halfx, 
+  // FIXME: stuff to make work
+ /* if (!loopmap->Map(renderer,dispx,dispy)) {
+    circleRGBA(renderer,dispx+halfx,dispy+halfy,halfx,
                0,0,0, 255); // Outline
     // Show portion played in semitranslucent
     int pieradius = MIN((int) (lvol*looppiemag*curpeak),70);
-    filledPieRGBA(screen,dispx+halfx,dispy+halfy,
+    filledPieRGBA(renderer,dispx+halfx,dispy+halfy,
                pieradius,0,
                (int) (360*loopmgr->GetPos(i)),
                (int) (loopcolors[3].r*colormag),
@@ -1069,14 +1075,14 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
     float loop_volmag = fullx*0.9/2, // For loop volume bar
       loop_dvolmag = fullx*250; // For loop volume delta bar
     int magbar = (int) (loop_volmag*loopmgr->GetTriggerVol(i));
-    boxRGBA(screen,dispx+halfx-magbar,
+    boxRGBA(renderer,dispx+halfx-magbar,
             dispy+halfy-halfy/5,
             dispx+halfx+magbar,
             dispy+halfy+halfy/5,
             (int) (loopcolors[3].r*colormag),0,0, 127);
     // Show volume delta
     magbar = (int) ((loopdvol-1.0)*loop_dvolmag);
-    boxRGBA(screen,dispx+halfx,
+    boxRGBA(renderer,dispx+halfx,
             dispy+halfy+halfy/4,
             dispx+halfx+magbar,
             dispy+halfy+halfy/2,
@@ -1084,7 +1090,7 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
     
     // Show if overdub
     if (loopmgr->GetStatus(i) == T_LS_Overdubbing)
-      draw_text(screen,mainfont,"O",dispx+halfx,dispy+halfy,txtclr,1,1);
+      draw_text(renderer,mainfont,"O",dispx+halfx,dispy+halfy,txtclr,1,1);
     
     if (drawtext) {
       // Show loop name
@@ -1101,7 +1107,7 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
         int txty = dispy+fully;
         char *curn = renamer->GetCurName();
         if (*curn != '\0')
-          VideoIO::draw_text(screen,smallfont,curn,
+          VideoIO::draw_text(renderer,smallfont,curn,
                              dispx,txty,txtclr2,0,2,&sx,&sy);
         else {
           sx = 0;
@@ -1109,13 +1115,13 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
         }
 
         if (rui->rename_cursor_toggle)
-          boxRGBA(screen,
+          boxRGBA(renderer,
                   dispx+sx,txty,
                   dispx+sx+sy/2,txty-sy,
                   cursorclr.r,cursorclr.g,cursorclr.b,255);
       } else if (l != 0 && l->name != 0)
         // Show name
-        draw_text(screen,smallfont,l->name,
+        draw_text(renderer,smallfont,l->name,
                   dispx,dispy+fully,txtclr2,0,2);
 
       // Show last recorded loop #
@@ -1125,7 +1131,7 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
       if (cnt < LAST_REC_COUNT) {
         char tmp[50];
         snprintf(tmp,50,"L%d",cnt+1);
-        draw_text(screen,smallfont,tmp,
+        draw_text(renderer,smallfont,tmp,
                   dispx+fullx,dispy,txtclr2,2,0);
       }
 
@@ -1149,7 +1155,7 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
         SDL_Color tmpclr = { (int) (loopcolors[3].r*colormag), 
                              (int) (loopcolors[3].g*colormag), 
                              (int) (loopcolors[3].b*colormag), 0 };
-        draw_text(screen,mainfont,tmp,dispx,dispy+textyofs,tmpclr);
+        draw_text(renderer,mainfont,tmp,dispx,dispy+textyofs,tmpclr);
       }
 #endif
     }
@@ -1157,9 +1163,9 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
     loopmgr->UnlockLoops();
     return 0;
   } else {
-    loopmgr->UnlockLoops();
+  */  loopmgr->UnlockLoops();
     return 1;
-  }
+//   }
 };
 
 // If no suitable map exists in list 'cmaps', creates a planar>circular map
@@ -1167,26 +1173,27 @@ char VideoIO::DrawLoop(LoopManager *loopmgr, int i,
 CircularMap *VideoIO::CreateMap(SDL_Surface *lscopepic, int sz) {
   // OK, scan to see if a fitting map already exists
   CircularMap *nw;
-  if (cmaps != 0)
-    nw = cmaps->Scan(sz);
-  else 
-    nw = 0;
-  if (nw == 0) {
-    // No fitting map found, generate one at the right size
-    int lscope_crinner = (int) (sz*0.13),
-      lscope_crsize = sz/2 - lscope_crinner;
-
-    printf("VIDEO: Generating planar->circular map @ size %d\n",sz);
-    nw = new CircularMap(lscopepic, 
-                         sz,sz,
-                         lscopewidth,lscopeheight,
-                         lscope_crinner, lscope_crsize);
-    // Store a copy in our list
-    if (cmaps == 0)
-      cmaps = nw;
-    else
-      cmaps->Link(nw);
-  }
+  // FIXME: this really needs to work before we will get anything much
+//   if (cmaps != 0)
+//     nw = cmaps->Scan(sz);
+//   else
+//     nw = 0;
+//   if (nw == 0) {
+//     // No fitting map found, generate one at the right size
+//     int lscope_crinner = (int) (sz*0.13),
+//       lscope_crsize = sz/2 - lscope_crinner;
+//
+//     printf("VIDEO: Generating planar->circular map @ size %d\n",sz);
+//     nw = new CircularMap(lscopepic,
+//                          sz,sz,
+//                          lscopewidth,lscopeheight,
+//                          lscope_crinner, lscope_crsize);
+//     // Store a copy in our list
+//     if (cmaps == 0)
+//       cmaps = nw;
+//     else
+//       cmaps->Link(nw);
+//   }
 
   return nw;
 };
@@ -1374,20 +1381,22 @@ void VideoIO::video_event_loop ()
 
   nframes_t scopelen = app->getCFG()->GetScopeSampleLen();
 
-  // Loop scope bitmap
-  Uint8 video_bpp = screen->format->BitsPerPixel;
-  Uint32 Rmask = screen->format->Rmask,
-    Gmask = screen->format->Gmask,
-    Bmask = screen->format->Bmask,
-    Amask = screen->format->Amask;
-  printf("VIDEO: Creating temporary buffers at %d bits\n",video_bpp);
-  lscopepic = 
-    SDL_CreateRGBSurface(SDL_HWSURFACE, 
-                         lscopewidth, lscopeheight, video_bpp, 
-                         Rmask, 
-                         Gmask, 
-                         Bmask, 
-                         Amask); // Flat
+  // FIXME: make it compile
+
+//   // Loop scope bitmap
+//   Uint8 video_bpp = screen->format->BitsPerPixel;
+//   Uint32 Rmask = screen->format->Rmask,
+//     Gmask = screen->format->Gmask,
+//     Bmask = screen->format->Bmask,
+//     Amask = screen->format->Amask;
+//   printf("VIDEO: Creating temporary buffers at %d bits\n",video_bpp);
+//   lscopepic =
+//     SDL_CreateRGBSurface(SDL_HWSURFACE,
+//                          lscopewidth, lscopeheight, video_bpp,
+//                          Rmask,
+//                          Gmask,
+//                          Bmask,
+//                          Amask); // Flat
 
   // Generate circular maps for all the different sized layout elements
   // as defined in config
@@ -1440,17 +1449,17 @@ void VideoIO::video_event_loop ()
   if (fweelin_logo.bytes_per_pixel != 4)
     printf("VIDEO: Warning: Logo image must be 32-bit.\n");
   else {
-    logopic = 
-      SDL_CreateRGBSurface(SDL_HWSURFACE, 
-                           fweelin_logo.width, fweelin_logo.height, 32, 
-                           0x000000FF, 
-                           0x0000FF00, 
-                           0x00FF0000, 
-                           0xFF000000);
-    
-    memcpy(logopic->pixels,fweelin_logo.pixel_data,
-           fweelin_logo.width * fweelin_logo.height * 
-           fweelin_logo.bytes_per_pixel);
+//     logopic =
+//       SDL_CreateRGBSurface(SDL_HWSURFACE,
+//                            fweelin_logo.width, fweelin_logo.height, 32,
+//                            0x000000FF,
+//                            0x0000FF00,
+//                            0x00FF0000,
+//                            0xFF000000);
+//
+//     memcpy(logopic->pixels,fweelin_logo.pixel_data,
+//            fweelin_logo.width * fweelin_logo.height *
+//            fweelin_logo.bytes_per_pixel);
   }
 
   // Help setup
@@ -1591,7 +1600,7 @@ void VideoIO::video_event_loop ()
             }
 
             /*if (loopexists)
-              DrawLoop(loopmgr,i,screen,lscopepic,
+              DrawLoop(loopmgr,i,renderer,lscopepic,
                        loopcolors[clrnum],colormag,
                        fs,curel,0,0,0,
                        lvol);*/
@@ -1617,7 +1626,9 @@ void VideoIO::video_event_loop ()
     sample_t *peakbuf, *avgbuf;
 
     // Clear screen
-    SDL_FillRect(screen,NULL,0);
+//     SDL_FillRect(renderer,NULL,0);
+
+	SDL_RenderClear(renderer);
 
     // Draw layouts
 #if 1
@@ -1662,31 +1673,31 @@ void VideoIO::video_event_loop ()
             elclr.r = selcolor[0].r;
             elclr.g = selcolor[0].g;
             elclr.b = selcolor[0].b;
-            elclr.unused = 0;
+            elclr.a = 1;
           } else {
             elclr.r = (int) (loopcolors[clrnum][0].r*colormag);
             elclr.g = (int) (loopcolors[clrnum][0].g*colormag);
             elclr.b = (int) (loopcolors[clrnum][0].b*colormag);
-            elclr.unused = 0;
+            elclr.a = 1;
           }
 
           // Draw each geometry of this element
           FloLayoutElementGeometry *curgeo = curel->geo;
           while (curgeo != 0) {
-            curgeo->Draw(screen,elclr);
+            curgeo->Draw(renderer,elclr);
             curgeo = curgeo->next;
           }
 
           // Draw loop for this element
           if (loopexists)
-            DrawLoop(loopmgr,i,screen,lscopepic,
+            DrawLoop(loopmgr,i,renderer,lscopepic,
                      loopcolors[clrnum],colormag,
                      fs,curel,0,0,0,
                      lvol);
 
           // Label this element
           if (curlayout->showelabel)
-            draw_text(screen,mainfont,curel->name,curel->nxpos,curel->nypos,
+            draw_text(renderer,mainfont,curel->name,curel->nxpos,curel->nypos,
                       white);
 
           curel = curel->next;
@@ -1695,7 +1706,7 @@ void VideoIO::video_event_loop ()
         
         // Label the layout
         if (curlayout->showlabel)
-          draw_text(screen,mainfont,curlayout->name,
+          draw_text(renderer,mainfont,curlayout->name,
                     curlayout->nxpos,curlayout->nypos,white);
       }
 
@@ -1722,14 +1733,14 @@ void VideoIO::video_event_loop ()
           lc_theta_break /= 1.5;
           
         for (int j = 0; j < a->GetLongCount_Cur(); j++, thetacur += thetalen)
-          filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale * LC_MAG),round(thetacur),
+          filledPieRGBA(renderer,pulsex,curpulsey,(int) (pulsepiemag * pulsescale * LC_MAG),round(thetacur),
                      round(thetacur+thetalen-lc_theta_break),
                      255,188,0,180);
-        filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,359,0,0,0,255);
-        filledPieRGBA(screen,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,
+        filledPieRGBA(renderer,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,359,0,0,0,255);
+        filledPieRGBA(renderer,pulsex,curpulsey,(int) (pulsepiemag * pulsescale),0,
                    (int) (360*a->GetPct()),127,127,127,255);
         sprintf(tmp,"%d",i+1);
-        draw_text(screen,mainfont,tmp,pulsex-pulsepiemag,curpulsey-
+        draw_text(renderer,mainfont,tmp,pulsex-pulsepiemag,curpulsey-
                   pulsepiemag,red);
 
         curpulsey += pulsespc;
@@ -1767,7 +1778,7 @@ void VideoIO::video_event_loop ()
       //if (gv > 255) gv = 255;
       //if (bv > 255) bv = 255;
     
-      vlineRGBA(screen,
+      vlineRGBA(renderer,
                 (int) pos,
                 midpt-peakd,
                 midpt+peakd,
@@ -1786,7 +1797,7 @@ void VideoIO::video_event_loop ()
       if (pos < 0.)
         pos += (float)scopewidth;
 
-      vlineRGBA(screen,
+      vlineRGBA(renderer,
                 (int) pos,
                 tmarky-metermag,
                 tmarky,
@@ -1804,7 +1815,7 @@ void VideoIO::video_event_loop ()
       int x = oscopex+i*2,
         y = oscopey+(int) (oscopemag*app->getSCOPE()[i]);
       if (ox != -1) 
-        lineRGBA(screen,ox,oy,x,y,127,127,255,255);
+        lineRGBA(renderer,ox,oy,x,y,127,127,255,255);
       ox = x;
       oy = y;
     }
@@ -1827,12 +1838,12 @@ void VideoIO::video_event_loop ()
       sprintf(tmp,"%s   %.1f mb  (%d streams)",
           app->getSTREAMOUTNAME_DISPLAY().c_str(),streamoutsize,num_streams);
     }
-    draw_text(screen,mainfont,tmp,patchx,patchy-OCY(22),gray);
+    draw_text(renderer,mainfont,tmp,patchx,patchy-OCY(22),gray);
 
     // Scene name
     SceneBrowserItem *curscene = app->getCURSCENE();
     if (curscene != 0)
-      draw_text(screen,mainfont,curscene->name,0,0,gray);
+      draw_text(renderer,mainfont,curscene->name,0,0,gray);
 
     // **
 
@@ -1841,7 +1852,7 @@ void VideoIO::video_event_loop ()
     FloDisplay *curdisplay = fs->GetDisplays();
     while (curdisplay != 0) {
       if (curdisplay->show || curdisplay->forceshow)
-        curdisplay->Draw(screen);
+        curdisplay->Draw(renderer);
       curdisplay = curdisplay->next;
     }
 #endif
@@ -1864,21 +1875,21 @@ void VideoIO::video_event_loop ()
     }
 
     if (draw_progress) {
-      boxRGBA(screen,progressbar_x+progress_size,progressbar_y,
+      boxRGBA(renderer,progressbar_x+progress_size,progressbar_y,
               progressbar_x+progressbar_xs,
               progressbar_y+progressbar_ys,
               50,50,10,255);
-      boxRGBA(screen,progressbar_x,progressbar_y,
+      boxRGBA(renderer,progressbar_x,progressbar_y,
               progressbar_x+progress_size,
               progressbar_y+progressbar_ys,
               255,255,30,255);
-      hlineRGBA(screen,progressbar_x,progressbar_x+progress_size,
+      hlineRGBA(renderer,progressbar_x,progressbar_x+progress_size,
                 progressbar_y,40,40,40,255);
-      hlineRGBA(screen,progressbar_x,progressbar_x+progress_size,
+      hlineRGBA(renderer,progressbar_x,progressbar_x+progress_size,
                 progressbar_y+progressbar_ys,40,40,40,255);
-      vlineRGBA(screen,progressbar_x,progressbar_y,
+      vlineRGBA(renderer,progressbar_x,progressbar_y,
                 progressbar_y+progressbar_ys,40,40,40,255);
-      vlineRGBA(screen,progressbar_x+progress_size,progressbar_y,
+      vlineRGBA(renderer,progressbar_x+progress_size,progressbar_y,
                 progressbar_y+progressbar_ys,40,40,40,255);
     }
 
@@ -1888,13 +1899,13 @@ void VideoIO::video_event_loop ()
 
       // Dim the background
       // This doesn't work for large regions- bug in SDL_gfx?
-      // boxRGBA(screen,helpx,helpy,helpx2,helpy2,255,255,255,0);
+      // boxRGBA(renderer,helpx,helpy,helpx2,helpy2,255,255,255,0);
       for (int i = helpy; i <= helpy2; i++) 
-        hlineRGBA(screen,helpx,helpx2,i,0,0,0,180);
-      hlineRGBA(screen,helpx,helpx2,helpy,255,255,255,127);
-      hlineRGBA(screen,helpx,helpx2,helpy2,255,255,255,127);
-      vlineRGBA(screen,helpx,helpy,helpy2,255,255,255,127);
-      vlineRGBA(screen,helpx2,helpy,helpy2,255,255,255,127);
+        hlineRGBA(renderer,helpx,helpx2,i,0,0,0,180);
+      hlineRGBA(renderer,helpx,helpx2,helpy,255,255,255,127);
+      hlineRGBA(renderer,helpx,helpx2,helpy2,255,255,255,127);
+      vlineRGBA(renderer,helpx,helpy,helpy2,255,255,255,127);
+      vlineRGBA(renderer,helpx2,helpy,helpy2,255,255,255,127);
 
       // Now, draw help
       for (int i = helpstartidx[showhelppage-1]; 
@@ -1902,11 +1913,11 @@ void VideoIO::video_event_loop ()
         char *s1 = fs->GetHelpLine(i,0),
           *s2 = fs->GetHelpLine(i,1);
         if (s1 != 0)
-          draw_text(screen,helpfont,s1,helpx,curhelpy,yellow,0,0,0,&spacey1);
+          draw_text(renderer,helpfont,s1,helpx,curhelpy,yellow,0,0,0,&spacey1);
         else 
           spacey1 = 0;
         if (s2 != 0)
-          draw_text(screen,helpfont,s2,helpx+helpmaxcol1,curhelpy,
+          draw_text(renderer,helpfont,s2,helpx+helpmaxcol1,curhelpy,
                     truewhite,0,0,0,&spacey2);
         else
           spacey2 = 0;
@@ -1941,7 +1952,7 @@ void VideoIO::video_event_loop ()
       dst.y = screen->h/2-titlepos/2;
       dst.w = titletemppic->w;
       dst.h = titlepos;
-      Squeeze_BlitSurface(titletemppic,screen,&dst);
+      Squeeze_BlitSurface(titletemppic,renderer,&dst);
     } else if (titlepct >= 1.0 && titlepct <= 4.0) {
       int titlepos = (int) (1.0*titletemppic->h);
       SDL_Rect dst;
@@ -1949,7 +1960,7 @@ void VideoIO::video_event_loop ()
       dst.y = screen->h/2-titlepos/2;
       dst.w = titletemppic->w;
       dst.h = titlepos;
-      Squeeze_BlitSurface(titletemppic,screen,&dst);
+      Squeeze_BlitSurface(titletemppic,renderer,&dst);
     } else if (titlepct > 4.0 && titlepct < 5.0) {
       int titlepos = (int) ((5.0-titlepct)*titletemppic->h);
       SDL_Rect dst;
@@ -1957,7 +1968,7 @@ void VideoIO::video_event_loop ()
       dst.y = screen->h/2-titlepos/2;
       dst.w = titletemppic->w;
       dst.h = titlepos;
-      Squeeze_BlitSurface(titletemppic,screen,&dst);
+      Squeeze_BlitSurface(titletemppic,renderer,&dst);
     } else if (titletemppic != 0) {
       SDL_FreeSurface(titletemppic);
       titletemppic = 0;
@@ -1966,69 +1977,69 @@ void VideoIO::video_event_loop ()
 
     // Draw logo
 #if 1
-    if (logopic != 0)
-    {
-      double video_elapsed = mygettime() - video_start;
-      float titlepct = video_elapsed;
-
-      float t_floatin = 2.0,
-        t_floatout = 4.0;
-      if (titlepct < 1.0) {
-        SDL_Rect dst;
-        dst.x = screen->w-logopic->w;
-        dst.y = (int) (-logopic->h + screen->h*titlepct);
-        dst.w = logopic->w;
-        dst.h = logopic->h;
-        SDL_BlitSurface(logopic, NULL, screen, &dst);   
-      } else if (titlepct > t_floatin && titlepct < t_floatin+1.0) {
-        SDL_Rect dst;
-        dst.x = screen->w-logopic->w;
-        dst.y = screen->h-logopic->h;
-        dst.w = logopic->w;
-        dst.h = logopic->h;
-        SDL_BlitSurface(logopic, NULL, screen, &dst);
-        int ver_x, ver_y;
-        TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
-        draw_text(screen,mainfont,VERSION,
-                  (int) (screen->w-(titlepct-t_floatin)*(ver_x+5)),
-                  screen->h-ver_y-5,truewhite);
-      } else if (titlepct >= t_floatin && titlepct <= t_floatout) {
-        SDL_Rect dst;
-        dst.x = screen->w-logopic->w;
-        dst.y = screen->h-logopic->h;
-        dst.w = logopic->w;
-        dst.h = logopic->h;
-        SDL_BlitSurface(logopic, NULL, screen, &dst);
-        int ver_x, ver_y;
-        TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
-        draw_text(screen,mainfont,VERSION,
-                  screen->w-(ver_x+5),
-                  screen->h-ver_y-5,truewhite);
-      } else if (titlepct > t_floatout && titlepct < t_floatout+1.0) {
-        SDL_Rect dst;
-        dst.x = screen->w-logopic->w;
-        dst.y = screen->h-logopic->h;
-        dst.w = logopic->w;
-        dst.h = logopic->h;
-        SDL_BlitSurface(logopic, NULL, screen, &dst);
-        int ver_x, ver_y;
-        TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
-        draw_text(screen,mainfont,VERSION,
-                  (int) (screen->w-(1.0-(titlepct-t_floatout))*(ver_x+5)),
-                  screen->h-ver_y-5,truewhite);
-      } else {
-        SDL_Rect dst;
-        dst.x = screen->w-logopic->w;
-        dst.y = screen->h-logopic->h;
-        dst.w = logopic->w;
-        dst.h = logopic->h;
-        SDL_BlitSurface(logopic, NULL, screen, &dst);
-      }
-    }
+//     if (logopic != 0)
+//     {
+//       double video_elapsed = mygettime() - video_start;
+//       float titlepct = video_elapsed;
+//
+//       float t_floatin = 2.0,
+//         t_floatout = 4.0;
+//       if (titlepct < 1.0) {
+//         SDL_Rect dst;
+//         dst.x = screen->w-logopic->w;
+//         dst.y = (int) (-logopic->h + screen->h*titlepct);
+//         dst.w = logopic->w;
+//         dst.h = logopic->h;
+//         SDL_BlitSurface(logopic, NULL, renderer, &dst);
+//       } else if (titlepct > t_floatin && titlepct < t_floatin+1.0) {
+//         SDL_Rect dst;
+//         dst.x = screen->w-logopic->w;
+//         dst.y = screen->h-logopic->h;
+//         dst.w = logopic->w;
+//         dst.h = logopic->h;
+//         SDL_BlitSurface(logopic, NULL, renderer, &dst);
+//         int ver_x, ver_y;
+//         TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
+//         draw_text(renderer,mainfont,VERSION,
+//                   (int) (screen->w-(titlepct-t_floatin)*(ver_x+5)),
+//                   screen->h-ver_y-5,truewhite);
+//       } else if (titlepct >= t_floatin && titlepct <= t_floatout) {
+//         SDL_Rect dst;
+//         dst.x = screen->w-logopic->w;
+//         dst.y = screen->h-logopic->h;
+//         dst.w = logopic->w;
+//         dst.h = logopic->h;
+//         SDL_BlitSurface(logopic, NULL, renderer, &dst);
+//         int ver_x, ver_y;
+//         TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
+//         draw_text(renderer,mainfont,VERSION,
+//                   screen->w-(ver_x+5),
+//                   screen->h-ver_y-5,truewhite);
+//       } else if (titlepct > t_floatout && titlepct < t_floatout+1.0) {
+//         SDL_Rect dst;
+//         dst.x = screen->w-logopic->w;
+//         dst.y = screen->h-logopic->h;
+//         dst.w = logopic->w;
+//         dst.h = logopic->h;
+//         SDL_BlitSurface(logopic, NULL, renderer, &dst);
+//         int ver_x, ver_y;
+//         TTF_SizeText(mainfont,VERSION,&ver_x,&ver_y);
+//         draw_text(renderer,mainfont,VERSION,
+//                   (int) (screen->w-(1.0-(titlepct-t_floatout))*(ver_x+5)),
+//                   screen->h-ver_y-5,truewhite);
+//       } else {
+//         SDL_Rect dst;
+//         dst.x = screen->w-logopic->w;
+//         dst.y = screen->h-logopic->h;
+//         dst.w = logopic->w;
+//         dst.h = logopic->h;
+//         SDL_BlitSurface(logopic, NULL, renderer, &dst);
+//       }
+//     }
 #endif
 
-    // Now update screen!
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(renderer,0,0,0,255);
+	SDL_RenderPresent(renderer);
     //video_time = mygettime() - t1;
 #endif // NO_VIDEO
 
@@ -2057,49 +2068,61 @@ void VideoIO::video_event_loop ()
 }
 
 void VideoIO::SetVideoMode(char fullscreen) {
-  const SDL_VideoInfo *info;
-  Uint8  video_bpp;
-  Uint32 videoflags;
+	pthread_mutex_lock (&video_thread_lock);
+	// FIXME: actually set fullscreen when asked
+// 	if (renderer == 0)
+// 	{
+	window = SDL_CreateWindow("Freewheeling",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
+	renderer = SDL_CreateRenderer(window,-1,0);
+// 		}
 
-  pthread_mutex_lock (&video_thread_lock);
 
-  if (screen != 0)
-    // Free existing screen
-    SDL_FreeSurface(screen);
-  screen = 0;
 
-  /* Alpha blending doesn't work well at 8-bit color */
-  info = SDL_GetVideoInfo();
-  if ( info->vfmt->BitsPerPixel > 8 ) {
-    video_bpp = info->vfmt->BitsPerPixel;
-  } else {
-    video_bpp = 16;
-  }
-  printf("VIDEO: SetVideoMode: Using %d-bit color\n", video_bpp);
+	pthread_mutex_unlock(&video_thread_lock);
 
-  // Disabled (slower) options:
-  /*| SDL_SRCALPHA | SDL_RESIZABLE |*/
-  videoflags = SDL_HWSURFACE | SDL_DOUBLEBUF;
-  this->fullscreen = fullscreen;
-  if (fullscreen) 
-    videoflags |= SDL_FULLSCREEN | SDL_NOFRAME;
-
-  /* Set right video mode */
-  int XSIZE = app->getCFG()->GetVSize()[0],
-    YSIZE = app->getCFG()->GetVSize()[1];
-  if ( (screen=SDL_SetVideoMode(XSIZE,YSIZE,video_bpp,videoflags)) == NULL ) {
-    printf("VIDEO: Couldn't set %ix%i video mode: %s\n",XSIZE,YSIZE,
-           SDL_GetError());
-    exit(1);
-  }
-
-  /* Use alpha blending */
-  //SDL_SetAlpha(inst->screen, SDL_SRCALPHA, 0);
- 
-  /* Set title for window */
-  SDL_WM_SetCaption("FreeWheeling","FreeWheeling");
-
-  pthread_mutex_unlock (&video_thread_lock);
+//   const SDL_VideoInfo *info;
+//   Uint8  video_bpp;
+//   Uint32 videoflags;
+//
+//   pthread_mutex_lock (&video_thread_lock);
+//
+//   if (screen != 0)
+//     // Free existing screen
+//     SDL_FreeSurface(screen);
+//   screen = 0;
+//
+//   /* Alpha blending doesn't work well at 8-bit color */
+//   info = SDL_GetVideoInfo();
+//   if ( info->vfmt->BitsPerPixel > 8 ) {
+//     video_bpp = info->vfmt->BitsPerPixel;
+//   } else {
+//     video_bpp = 16;
+//   }
+//   printf("VIDEO: SetVideoMode: Using %d-bit color\n", video_bpp);
+//
+//   // Disabled (slower) options:
+//   /*| SDL_SRCALPHA | SDL_RESIZABLE |*/
+//   videoflags = SDL_HWSURFACE | SDL_DOUBLEBUF;
+//   this->fullscreen = fullscreen;
+//   if (fullscreen)
+//     videoflags |= SDL_FULLSCREEN | SDL_NOFRAME;
+//
+//   /* Set right video mode */
+//   int XSIZE = app->getCFG()->GetVSize()[0],
+//     YSIZE = app->getCFG()->GetVSize()[1];
+//   if ( (screen=SDL_SetVideoMode(XSIZE,YSIZE,video_bpp,videoflags)) == NULL ) {
+//     printf("VIDEO: Couldn't set %ix%i video mode: %s\n",XSIZE,YSIZE,
+//            SDL_GetError());
+//     exit(1);
+//   }
+//
+//   /* Use alpha blending */
+//   //SDL_SetAlpha(inst->renderer, SDL_SRCALPHA, 0);
+//
+//   /* Set title for window */
+//   SDL_WM_SetCaption("FreeWheeling","FreeWheeling");
+//
+//   pthread_mutex_unlock (&video_thread_lock);
 }
 
 void *VideoIO::run_video_thread(void *ptr)

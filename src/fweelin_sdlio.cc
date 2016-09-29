@@ -36,15 +36,15 @@
 #include <sched.h>
 #include <sys/mman.h>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
 
 #ifdef __MACOSX__
 #include <SDL_gfx/SDL_gfxPrimitives.h>
 #include <SDL_ttf/SDL_ttf.h>
 #else
-#include <SDL/SDL_gfxPrimitives.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 #endif
 
 #include "fweelin_sdlio.h"
@@ -390,7 +390,7 @@ int SDLIO::GetSDLJoystickNum(char * id) {
 	for (int i=0; i < SDL_NumJoysticks(); i++) {
 		if (used[i]) { continue; } 
 // 		printf("checking %s vs %s\n",SDL_JoystickName(i),id);
-		if (!strcmp(SDL_JoystickName(i),id)) {
+		if (!strcmp(SDL_JoystickNameForIndex (i),id)) {
 		  used[i] = 1;
 		  printf("joystick: assigned %s to joystick %i\n",id,i);
 		  return i;
@@ -400,22 +400,24 @@ int SDLIO::GetSDLJoystickNum(char * id) {
 	return -1;
 }
   
-SDLKey SDLIO::GetSDLKey(char *keyname) {
-  SDLKey ky;
-  for (ky = SDLK_FIRST; ky < SDLK_LAST; ky = (SDLKey)(ky+1)) {
-    /*char *nm = SDL_GetKeyName(ky);
-      printf("\"%s\", \n",(!strcmp(nm,"unknown key") ? "" : nm));*/
-    /*if (SDL_names[ky][0] != '\0')
-      printf("%03d - %s\n",ky,SDL_names[ky]);*/
+SDL_Scancode SDLIO::GetSDL_Scancode(char const *keyname) {
+  SDL_Scancode ky;
 
-    if (!strcmp(SDL_names[ky],keyname))
-      return ky;
-  }
+  //FIXME:Make this work
+//   for (ky = SDL_SCANCODE_A; ky < SDL_NUM_SCANCODES; ky = (SDL_Scancode)(ky+1)) {
+//     /*char *nm = SDL_GetKeyName(ky);
+//       printf("\"%s\", \n",(!strcmp(nm,"unknown key") ? "" : nm));*/
+//     /*if (SDL_names[ky][0] != '\0')
+//       printf("%03d - %s\n",ky,SDL_names[ky]);*/
+//
+//     if (!strcmp(SDL_names[ky],keyname))
+//       return ky;
+//   }
 
-  return SDLK_UNKNOWN;
+  return SDL_SCANCODE_UNKNOWN;
 };
 
-const char *SDLIO::GetSDLName(SDLKey sym) { return SDL_names[sym]; };
+const char *SDLIO::GetSDLName(SDL_Scancode sym) { return SDL_names[sym]; };
 
 int SDLIO::activate() {
   sdlthreadgo = 1;
@@ -633,7 +635,7 @@ void *SDLIO::run_sdl_thread(void *ptr)
     inst->joys = new SDL_Joystick *[inst->numjoy];
   printf("SDLIO: Detected %d joysticks..\n", inst->numjoy);
   for (int i = 0; i < inst->numjoy; i++) {
-    printf("  Joystick #%d: %s\n",i+1,SDL_JoystickName(i));
+    printf("  Joystick #%d: %s\n",i+1,SDL_JoystickNameForIndex(i));
     inst->joys[i] = SDL_JoystickOpen(i);
   }
   
@@ -712,8 +714,8 @@ void *SDLIO::run_sdl_thread(void *ptr)
 
       case SDL_KEYDOWN : 
         {
-          SDLKey sym = event.key.keysym.sym;
-          if (sym >= SDLK_FIRST && sym < SDLK_LAST) {
+          SDL_Scancode sym = event.key.keysym.scancode;
+          if (sym >= SDL_SCANCODE_A && sym < SDL_NUM_SCANCODES) {
             // Mark the key as held down
             inst->keyheld[sym] = 1;
             
@@ -723,7 +725,7 @@ void *SDLIO::run_sdl_thread(void *ptr)
             
             kevt->down = 1;
             kevt->keysym = sym;
-            kevt->unicode = event.key.keysym.unicode;
+//             kevt->unicode = event.key.keysym.unicode;
             inst->app->getEMG()->BroadcastEventNow(kevt, inst);
             
             if (inst->app->getCFG()->IsDebugInfo())
@@ -737,8 +739,8 @@ void *SDLIO::run_sdl_thread(void *ptr)
         break;
       case SDL_KEYUP :
         {
-          SDLKey sym = event.key.keysym.sym;
-          if (sym >= SDLK_FIRST && sym < SDLK_LAST) {
+          SDL_Scancode sym = event.key.keysym.scancode;
+          if (sym >= SDL_SCANCODE_A && sym < SDL_NUM_SCANCODES) {
             // Mark the key as unheld
             inst->keyheld[sym] = 0;
             
@@ -747,7 +749,7 @@ void *SDLIO::run_sdl_thread(void *ptr)
               Event::GetEventByType(T_EV_Input_Key);
             kevt->down = 0;
             kevt->keysym = sym;
-            kevt->unicode = event.key.keysym.unicode;
+//             kevt->unicode = event.key.keysym.unicode;
             inst->app->getEMG()->BroadcastEventNow(kevt, inst);
             
             if (inst->app->getCFG()->IsDebugInfo())

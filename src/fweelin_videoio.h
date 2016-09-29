@@ -20,15 +20,15 @@
 
 #include "fweelin_event.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #ifdef __MACOSX__
 #include <SDL_gfx/SDL_gfxPrimitives.h>
 #include <SDL_ttf/SDL_ttf.h>
 #include "FweelinMac.h"
 #else
-#include <SDL/SDL_gfxPrimitives.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 #endif
 
 #ifdef __MACOSX__
@@ -63,7 +63,7 @@ public:
   // Create a mapping from the flat surface 'in' to a circular region
   // of the given dimensions-- the output surface location is specified when
   // actually mapping
-  CircularMap(SDL_Surface *in, 
+  CircularMap(SDL_Renderer *renderer,
               int map_xs, int map_ys,
               int in_xs, int in_ys,
               int rinner, int rsize);
@@ -88,7 +88,7 @@ public:
     cur->next = nw;
   };
 
-  SDL_Surface *in;
+  SDL_Renderer *renderer;
   Uint8 **map;
   int *scanmap;
   int map_xs, map_ys,
@@ -103,7 +103,7 @@ class VideoIO : public EventProducer, public EventListener {
   friend class Fweelin;
 
 public:
-  VideoIO (Fweelin *app) : app(app), screen(0), cmaps(0), 
+  VideoIO (Fweelin *app) : app(app), renderer(0), cmaps(0),
     showlooprange(0,0), showhelppage(0), cur_iid(0), videothreadgo(0) {};
 
   int activate ();
@@ -119,7 +119,7 @@ public:
   void ReceiveEvent(Event *ev, EventProducer *from);
 
   // Draw text, and optionally return size of text drawn in sx and sy
-  static int draw_text(SDL_Surface *out, TTF_Font *font,
+  static int draw_text(SDL_Renderer *renderer, TTF_Font *font,
                        char const *str, int x, int y, SDL_Color clr, char centerx = 0,
                        char centery = 0, int *sx = 0, int *sy = 0);
 
@@ -135,7 +135,7 @@ public:
   // and position.
   // Returns nonzero if loop not drawn
   char DrawLoop(LoopManager *loopmgr, int i, 
-                SDL_Surface *screen, SDL_Surface *lscopepic,
+                SDL_Renderer *renderer, SDL_Surface *lscopepic,
                 SDL_Color *loopcolors, float colormag,
                 FloConfig *fs, FloLayoutElement *curel,
                 
@@ -169,7 +169,8 @@ public:
   
   char fullscreen; // Fullscreen video?
 
-  SDL_Surface *screen;
+  SDL_Renderer *renderer;
+  SDL_Window * window;
   
   // Pointers to fonts that video uses-- links into FloFont structures
   TTF_Font *mainfont, *helpfont, *smallfont;

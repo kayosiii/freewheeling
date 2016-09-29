@@ -8,6 +8,6 @@ add_definitions (-D_REENTRANT -DPTHREADS -DNDEBUG -DVERSION="0.6.1" -DFWEELIN_DA
 set ( CMAKE_CXX_FLAGS_RELEASE "-g -Wall -Wno-write-strings -Wno-non-virtual-dtor -funroll-loops -finline-functions -fomit-frame-pointer -ffast-math -fexpensive-optimizations -fstrict-aliasing -falign-loops=2 -falign-jumps=2 -falign-functions=2 -O9")
 
 add_executable ( freewheeling ${FWEELIN_SOURCES})
-target_link_libraries ( freewheeling crypto lo pthread jack xml2 sndfile vorbisenc vorbisfile ogg vorbis SDL asound X11 SDL_gfx SDL_ttf)
+target_link_libraries ( freewheeling crypto lo pthread jack xml2 sndfile vorbisenc vorbisfile ogg vorbis SDL2 asound X11 SDL2_gfx SDL2_ttf)
 
 install (TARGETS freewheeling DESTINATION bin)

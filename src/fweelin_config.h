@@ -18,7 +18,7 @@
    You should have received a copy of the GNU General Public License
    along with Freewheeling.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -276,11 +276,11 @@ class InputMatrix : public EventProducer, public EventListener {
 
   // Adds one key to the given list based on the keysym name
   // Returns the new first pointer
-  SDLKeyList *AddOneKey (SDLKeyList *first, char *str);
+  SDL_ScancodeList *AddOneKey (SDL_ScancodeList *first, char *str);
 
   // Extracts named keys from the given string and returns a list
   // of the keysyms (named keys are separated by ,)
-  SDLKeyList *ExtractKeys (char *str);
+  SDL_ScancodeList *ExtractKeys (char *str);
 
   // Parses the given token (no math ops!) into dst
   // Correctly identifies when variables or event parameters are referenced
@@ -325,7 +325,7 @@ class FloLayoutElementGeometry {
 
   // Draw this element to the given screen-
   // implementation given in videoio.cc
-  virtual void Draw(SDL_Surface *screen, SDL_Color clr) = 0;
+  virtual void Draw(SDL_Renderer *renderer, SDL_Color clr) = 0;
 
   // Inside returns nonzero if the given coordinates fall inside this
   // element geometry
@@ -340,7 +340,7 @@ class FloLayoutBox : public FloLayoutElementGeometry {
 
   // Draw this element to the given screen-
   // implementation given in videoio.cc
-  virtual void Draw(SDL_Surface *screen, SDL_Color clr);
+  virtual void Draw(SDL_Renderer *renderer, SDL_Color clr);
 
   // Inside returns nonzero if the given coordinates fall inside this
   // element geometry
@@ -499,7 +499,7 @@ class FloDisplay {
 
   // Draw this display to the given screen-
   // implementation given in videoio.cc
-  virtual void Draw(SDL_Surface *screen) = 0;
+  virtual void Draw(SDL_Renderer *renderer) = 0;
 
   virtual FloDisplayType GetFloDisplayType() { return FD_Unknown; };
 
@@ -531,7 +531,7 @@ class FloDisplayPanel : public FloDisplay
       delete[] child_displays;
   };
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   // Set whether this display is showing
   virtual void SetShow(char show) {
@@ -557,7 +557,7 @@ class FloDisplayText : public FloDisplay
  public:
   FloDisplayText (int iid) : FloDisplay(iid) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 };
 
 // Switch display shows the title in different color depending on the value of
@@ -567,7 +567,7 @@ class FloDisplaySwitch : public FloDisplay
  public:
   FloDisplaySwitch (int iid) : FloDisplay(iid) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 };
 
 // Circle switch display shows a circle which changes color and optionally
@@ -578,7 +578,7 @@ class FloDisplayCircleSwitch : public FloDisplay
   FloDisplayCircleSwitch (int iid) : FloDisplay(iid), rad1(0), rad0(0), flash(0), prevnonz(0), 
     nonztime(0.) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   int rad1, rad0; // Radii of circle when switch is on or off
 
@@ -595,7 +595,7 @@ class FloDisplayTextSwitch : public FloDisplay
  public:
   FloDisplayTextSwitch (int iid) : FloDisplay(iid), text1(0), text0(0) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   char *text1, // Text for nonzero value
     *text0;    // Text for zero value
@@ -613,7 +613,7 @@ class FloDisplayBar : public FloDisplay
   FloDisplayBar (int iid) : FloDisplay(iid), 
     orient(O_Vertical), barscale(1.0), thickness(10), dbscale(0), marks(0), maxdb(0) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   CfgOrientation orient; // Orientation of bar
   float barscale; // Scaling factor for size of bar
@@ -636,7 +636,7 @@ class FloDisplayBarSwitch : public FloDisplayBar
       delete switchexp;
   };
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   ParsedExpression *switchexp; // Expression which evaluates to a value. Nonzero values cause the bar 
                                // to appear bright, zero values cause a dim, faded bar
@@ -651,7 +651,7 @@ class FloDisplaySquares : public FloDisplay
  public:
   FloDisplaySquares (int iid) : FloDisplay(iid), orient(O_Horizontal) {};
 
-  virtual void Draw(SDL_Surface *screen);
+  virtual void Draw(SDL_Renderer *renderer);
 
   CfgOrientation orient; // Orientation of bar
   float v1, v2,          // Value corresponding to first and last square
