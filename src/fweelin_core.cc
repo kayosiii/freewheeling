@@ -45,7 +45,9 @@
 
 #include <glob.h>
 
-#include <openssl/md5.h>
+// #include <openssl/md5.h>
+ #include <gnutls/gnutls.h>
+ #include <gnutls/crypto.h>
 
 #include "fweelin_core.h"
 #include "fweelin_fluidsynth.h"
@@ -951,20 +953,25 @@ void TriggerMap::GoSave(char *filename) {
   if (newScene) {
     // Begin our save by generating a scene hash from the loop hashes
     // This will give us an appropriate scene filename
-    MD5_CTX md5gen;
-    MD5_Init(&md5gen);
+	gnutls_hash_hd_t * md5gen = nullptr;
+	gnutls_hash_init(md5gen, GNUTLS_DIG_MD5);
+
+//     MD5_CTX md5gen;
+//
+//     MD5_Init(&md5gen);
     for (int i = 0; i < mapsize; i++)
       if (map[i] != 0) {
         if (map[i]->GetSaveStatus() == SAVE_DONE)
           // Update scene hash with hash from this loop
-          MD5_Update(&md5gen,map[i]->GetSaveHash(),SAVEABLE_HASH_LENGTH);
+         // MD5_Update(&md5gen,map[i]->GetSaveHash(),SAVEABLE_HASH_LENGTH);
+		gnutls_hash(*md5gen, map[i]->GetSaveHash(), SAVEABLE_HASH_LENGTH);
         else
           printf("DISK: WARNING: Loop %d not saved yet but scene about to be "
                  "saved!\n",i);
       }
     
     // Done- compute our final hash
-    MD5_Final(GetSaveHash(),&md5gen);
+	gnutls_hash_deinit(*md5gen, GetSaveHash());
   }
   
   SetSaveStatus(SAVE_DONE);
@@ -1158,10 +1165,12 @@ void LoopManager::SetupSaveLoop(Loop *l, int l_idx, FILE **out,
 
     // *** Hopefully this won't take so long- or we may have to split it up
     // as we split up the write phase
-    AudioBlockIterator *hashi = new AudioBlockIterator(l->blocks,
-                                                       LOOP_HASH_CHUNKSIZE);
-    MD5_CTX md5gen;
-    MD5_Init(&md5gen);
+    AudioBlockIterator *hashi = new AudioBlockIterator(l->blocks,LOOP_HASH_CHUNKSIZE);
+
+	gnutls_hash_hd_t * md5gen;
+	gnutls_hash_init(md5gen, GNUTLS_DIG_MD5);
+//     MD5_CTX md5gen;
+//     MD5_Init(&md5gen);
     char go = 1;
     char stereo = l->blocks->IsStereo();
     
@@ -1174,12 +1183,16 @@ void LoopManager::SetupSaveLoop(Loop *l, int l_idx, FILE **out,
       if (stereo) {
         // Stereo
         hashi->GetFragment(&ibuf[0],&ibuf[1]);
-        MD5_Update(&md5gen,ibuf[0],sizeof(sample_t) * num);
-        MD5_Update(&md5gen,ibuf[1],sizeof(sample_t) * num);
+		gnutls_hash(*md5gen,ibuf[0],sizeof(sample_t) * num);
+		gnutls_hash(*md5gen,ibuf[1],sizeof(sample_t) * num);
+
+//         MD5_Update(&md5gen,ibuf[0],sizeof(sample_t) * num);
+//         MD5_Update(&md5gen,ibuf[1],sizeof(sample_t) * num);
       } else {
         // Mono
         hashi->GetFragment(&ibuf[0],0);
-        MD5_Update(&md5gen,ibuf[0],sizeof(sample_t) * num);
+		gnutls_hash(*md5gen,ibuf[0],sizeof(sample_t) * num);
+//         MD5_Update(&md5gen,ibuf[0],sizeof(sample_t) * num);
       }
       
       if (remaining <= LOOP_HASH_CHUNKSIZE) {
@@ -1190,7 +1203,8 @@ void LoopManager::SetupSaveLoop(Loop *l, int l_idx, FILE **out,
     } while (go);
     
     // Done- compute final hash
-    MD5_Final(l->GetSaveHash(),&md5gen);
+	gnutls_hash_deinit(*md5gen,l->GetSaveHash());
+//     MD5_Final(l->GetSaveHash(),&md5gen);
     l->SetSaveStatus(SAVE_DONE);
     delete hashi;
 

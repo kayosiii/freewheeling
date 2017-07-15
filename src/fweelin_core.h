@@ -29,6 +29,7 @@
 #include <openssl/md5.h>
 #else
 // #include <gnutls/openssl.h>
+#include <gnutls/gnutls.h>
 #endif
 
 #include "fweelin_amixer.h"

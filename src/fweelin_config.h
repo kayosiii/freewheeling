@@ -43,7 +43,7 @@
 // FWEELIN_FILE_BROWSER_DIVISION_TIME seconds apart
 #define FWEELIN_FILE_BROWSER_DIVISION_TIME 3600
 
-#define FWEELIN_CONFIG_DIR  ".fweelin"
+#define FWEELIN_CONFIG_DIR  ".config/freewheeling"
 #define FWEELIN_CONFIG_FILE "fweelin.xml"
 #define FWEELIN_CONFIG_EXT  ".xml"
 #define FWEELIN_CONFIG_HELP_TOKEN "HELP:"
@@ -53,6 +53,7 @@
 #define FWEELIN_OUTPUT_LOOP_NAME   "loop"
 #define FWEELIN_OUTPUT_SCENE_NAME  "scene"
 #define FWEELIN_OUTPUT_SNAPSHOT_NAME "snapshot"
+
 #define FWEELIN_OUTPUT_LOOPSNAPSHOT_NAME "loopsnap"
 #define FWEELIN_OUTPUT_DATA_EXT    ".xml"
 
