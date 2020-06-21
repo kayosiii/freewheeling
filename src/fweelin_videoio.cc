@@ -88,23 +88,22 @@ CircularMap::CircularMap(SDL_Surface *in,
       int yofs = y-map_yc,
         xofs = map_xc-x;
       float theta = atan2(yofs,xofs),
-        in_x = in_xs*(theta+M_PI)/(2*M_PI);
+        in_x = (in_xs-1)*(theta+M_PI)/(2*M_PI);
 
       // Now that we know x mapping, based on calculated theta (see theta)
       // Let's get y mapping
       float in_y;
-      if (sin(theta) == 0) {
+      if (yofs == 0) {
         // This fixes an annoying horizontal crack in the map
-        in_y = (xofs-rinner)*in_ys/rsize;
+        in_y = (abs(xofs)-rinner)*in_ys/rsize-0.5;
         //printf("xofs: %d yofs: %d inx: %f iny: %f\n",xofs,yofs,in_x,in_y);
       }
       else
-        in_y = (yofs/sin(theta)-rinner)*in_ys/rsize;
+        in_y = (yofs/sin(theta)-rinner)*(in_ys)/rsize-0.5;
 
       // Are we in range, honey?
       int idx = y*map_xs + x;
-      if (in_x >= 0 & in_y >= 0 &&
-          in_x < in_xs && in_y < in_ys) {
+      if (0 <= in_y  && in_y < in_ys) {
         /*printf("%d %d\n", x, y);
           printf(" in[%d,%d]\n",(int)in_x,(int)in_y);*/
 
@@ -161,6 +160,14 @@ CircularMap::CircularMap(SDL_Surface *in,
     for (; runnum < 4; runnum++) 
       scanmap[y*4 + runnum] = -1;
   }
+
+//   printf("\n\n");
+//   for(int i = 0; i < 4*map_ys; i++)
+//   {
+// 	printf("%d, ",scanmap[i]);
+// 	if (i%4==3) printf("\n");
+//   }
+//   printf("\n\n");
 }
 
 CircularMap::~CircularMap() {
